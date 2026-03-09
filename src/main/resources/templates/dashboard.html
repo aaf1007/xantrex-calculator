@@ -20,7 +20,7 @@
 
     <div class="container mt-4">
 
-        <div class="card mb-4 p-4">
+        <div th:if="${isIntern}" class="card mb-4 p-4">
             <h5>Add Controller</h5>
             <form th:action="@{/dashboard/add}" method="post" class="row g-2">
                 <div class="col-md-2">
@@ -71,7 +71,7 @@
                         <td th:text="${controller.maxCurrent}"></td>
                         <td th:text="${controller.maxIsc}"></td>
                         <td th:text="${controller.batteryBank}"></td>
-                        <td>
+                        <td th:if="${isIntern}">
                             <form th:action="@{/dashboard/delete}" method="post" style="display:inline;">
                                 <input type="hidden" name="id" th:value="${controller.id}" />
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>

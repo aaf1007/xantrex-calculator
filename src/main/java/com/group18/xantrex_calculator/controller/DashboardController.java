@@ -1,5 +1,7 @@
 package com.group18.xantrex_calculator.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,12 @@ public class DashboardController {
     @GetMapping
     public String dashboard(Model model) {
         model.addAttribute("controllers", controllerRepository.findAll());
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isIntern = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_INTERN"));
+        model.addAttribute("isIntern", isIntern);
+
         return "dashboard";
     }
 
