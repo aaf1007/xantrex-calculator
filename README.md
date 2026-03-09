@@ -16,6 +16,28 @@
 
 ---
 
+## Local Development Setup
+
+Before running the application or tests, export the three required environment variables in your terminal:
+
+```bash
+export DB_URL=jdbc:postgresql://dpg-d6n244nafjfc739es540-a.oregon-postgres.render.com:5432/cmpt_276_xantrex_database?sslmode=require
+export DB_USER=cmpt_276_xantrex_database_user
+export DB_PASSWORD=<ask team lead for password>
+
+# Run the application
+./mvnw spring-boot:run
+
+# Run tests
+./mvnw test
+```
+
+The application will fail to start if any of these variables are missing — this is intentional (no H2 fallback). Set them in your shell profile (`.zshrc` / `.bashrc`) to avoid re-exporting each session.
+
+**Render deployment:** Set these as environment variables in the Render dashboard under your service's "Environment" tab. Do not commit real credentials to any file.
+
+---
+
 ## 1. Introduction
 
 This project proposes the development of a Solar MPPT Controller Calculator that determines the correct MPPT solar charge controller based on user-provided solar panel specifications, environmental conditions, and battery bank voltage. The system ensures compliance with NEC standards and manufacturer safety requirements.
