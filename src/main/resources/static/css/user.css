@@ -5,6 +5,7 @@
   --xan-white: #ffffff;
   --xan-gray: #f5f5f5;
 }
+/* DO NOT CHANGE BEYOND THIS  */
 
 body {
   background-color: var(--xan-gray);
