@@ -1,6 +1,6 @@
 /* Xantrex Brand Colors */
 :root {
-  --xan-navy: #1B3668;
+  --xan-navy: #113e7e;
   --xan-light-blue: #b8d4e8;
   --xan-white: #ffffff;
   --xan-gray: #f5f5f5;
@@ -85,6 +85,30 @@ a.xan-link:hover {
 /* Live metrics */
 .live-metric {
   color: var(--xan-navy);
-  font-weight: bold;
+  font-weight: 700;
   font-size: 1.2rem;
+}
+
+/* Gray panel cards (calculator) */
+.xan-panel {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+/* Section titles */
+.xan-title {
+  color: var(--xan-navy);
+  font-weight: 600;
+}
+
+/* Page title */
+.xan-page-title {
+  color: var(--xan-navy);
+  font-weight: 600;
+}
+
+/* White background body */
+.bg-xan-white {
+  background-color: var(--xan-white);
 }
