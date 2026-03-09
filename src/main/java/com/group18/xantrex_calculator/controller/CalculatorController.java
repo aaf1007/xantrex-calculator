@@ -1,10 +1,12 @@
 package com.group18.xantrex_calculator.controller;
 
+import com.group18.xantrex_calculator.entity.MpptController;
 import com.group18.xantrex_calculator.model.CalculatorResult;
 import com.group18.xantrex_calculator.service.CalculatorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.Optional;
 
 @Controller
 public class CalculatorController {
@@ -22,17 +24,19 @@ public class CalculatorController {
 
     @PostMapping("/calculator")
     public String calculate(
-            @RequestParam double pmax,
-            @RequestParam double voc,
-            @RequestParam double isc,
-            @RequestParam int series,
-            @RequestParam int parallel,
-            @RequestParam int battV,
-            @RequestParam double tempFactor,
-            Model model) {
+        @RequestParam double pmax,
+        @RequestParam double voc,
+        @RequestParam double isc,
+        @RequestParam int series,
+        @RequestParam int parallel,
+        @RequestParam int battV,
+        @RequestParam double tempFactor,
+        Model model) {
 
         CalculatorResult result = calculatorService.calculate(pmax, voc, isc, series, parallel, battV, tempFactor);
+        Optional<MpptController> match = calculatorService.findMatchingController(result, battV == 12 ? "12V" : "24V");
         model.addAttribute("result", result);
+        model.addAttribute("recommendedController", match.orElse(null));
         return "result";
     }
 }

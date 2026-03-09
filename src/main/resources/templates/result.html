@@ -19,14 +19,17 @@
             <div class="col-md-6 text-center">
                 <h3 class="mb-4">3. Recommended MPPT Solar Charge Controller:</h3>
 
-                <div class="card p-5 shadow-lg border-0">
-                    <img src="/images/placeholder.png" class="img-fluid mb-4" style="max-height: 250px;">
-
-                    <h2 class="fw-bold">Recommended Controller</h2>
-                    <p class="text-muted">Total Power: <span th:text="${result.totalPower}"></span> W</p>
-                    <a href="#" class="btn btn-dark btn-lg">Buy on Bay Marine Supply</a>
-
-                </div>
+                <div class="card p-5 shadow-lg border-0" th:if="${recommendedController != null}">                                                            
+                    <h2 class="fw-bold" th:text="${recommendedController.name}"></h2>                                                                         
+                    <p class="text-muted">Total Power: <span th:text="${result.totalPower}"></span> W</p>                                                     
+                    <p class="text-muted">Max VOC: <span th:text="${recommendedController.maxVoc}"></span> V</p>                                              
+                    <p class="text-muted">Max Current: <span th:text="${recommendedController.maxCurrent}"></span> A</p>                                      
+                    <p class="text-muted">Battery Bank: <span th:text="${recommendedController.batteryBank}"></span></p>                                      
+                </div>                                                                                                                                        
+                                                                                                                                              
+  <div class="card p-5 shadow-lg border-0" th:if="${recommendedController == null}">
+      <p class="text-danger fw-bold">No compatible controller found. Please adjust your specifications.</p>
+  </div>
 
                 <a th:href="@{/calculator}" class="btn btn-link mt-3 text-decoration-none">← Adjust Specifications</a>
             </div>
