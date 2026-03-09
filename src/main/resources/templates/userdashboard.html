@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,7 +20,7 @@
 <div class="container py-5">
     <h2 class="text-center mb-4">MPPT Solar Charge Controller Calculator</h2>
 
-    <form th:action="@{/save-config}" method="post"> <!-- the action is just demo-->
+    <form th:action="@{/calculator}" method="post"> 
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="card p-4 h-100">
@@ -105,6 +105,7 @@
         </div>
         
         <div class="text-center mt-4">
+            <input type="hidden" name="tempFactor" value="1.2"/>                          
             <button type="submit" class="btn btn-primary btn-lg px-5">View Recommended Controller</button>
         </div>
     </form>
@@ -116,17 +117,17 @@
     inputs.forEach(input => {
         input.addEventListener('input', () => {
             const pmax = parseFloat(document.getElementById('pmax').value) || 0;
-            const voc = parseFloat(document.getElementById('voc-input')?.value || 19.83); // default to 19.83 if not found
+            const voc = parseFloat(document.getElementById('voc')?.value || 19.83); // default to 19.83 if not found
             const isc = parseFloat(document.getElementById('isc')?.value || 10); //this 10 has to be replaced by the actual value from the datasheet
             const series = parseInt(document.getElementById('series').value) || 1;
             const parallel = parseInt(document.getElementById('parallel').value) || 1;
             const battV = document.querySelector('input[name="battV"]:checked').value;
 
-            // calculations can be adjusted here, but if it is done in the backend than we can just display the values.
+            // the hardcoded 1.2 will switch based on temp
             const totalW = pmax * series * parallel;
-            const totalV = (voc * series * 1.2).toFixed(1); // 1.2 is safety factor
-            const totalI = isc * parallel; // Haven't figured out how to use this calculate, might do in later iterations 
-            const chargeA = (totalW / battV).toFixed(1);
+            const totalV = (voc * series * 1.2).toFixed(1); // 1.2 is safety factor, this will change once we implement weather api
+            const totalI = isc * parallel; // Short Circuit Current = ISC × panels in parallel 
+            const chargeA = (totalW / (battV == 12 ? 14.7 : 29.4)).toFixed(1); //uses actual charge voltage per NEC.
 
             document.getElementById('totalWatts').innerText = totalW + " W";
             document.getElementById('totalVoc').innerText = totalV + " V";
