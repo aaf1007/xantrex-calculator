@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,14 +23,24 @@
           <div class="form-panel">
             <h3>Login</h3>
 
-            <input class="form-control mb-2" placeholder="Email" />
-            <input
-              type="password"
-              class="form-control mb-2"
-              placeholder="Password"
-            />
+            <form th:action="@{/login}" method="post">
+              <div th:if="${param.registered}" class="alert alert-success py-2 mb-2" role="alert">
+                Account created, please log in.
+              </div>
+              <div th:if="${param.error}" class="alert alert-danger py-2 mb-2" role="alert">
+                Invalid email or password.
+              </div>
 
-            <button class="btn btn-primary w-100">Login</button>
+              <input type="email" name="email" class="form-control mb-2" placeholder="Email" />
+              <input
+                type="password"
+                name="password"
+                class="form-control mb-2"
+                placeholder="Password"
+              />
+
+              <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
 
             <p class="mt-3">
               Don't have an account?
@@ -42,15 +52,21 @@
           <div class="form-panel">
             <h3>Create Account</h3>
 
-            <input class="form-control mb-2" placeholder="Name" />
-            <input class="form-control mb-2" placeholder="Email" />
-            <input
-              type="password"
-              class="form-control mb-2"
-              placeholder="Password"
-            />
+            <form th:action="@{/register}" method="post">
+              <div th:if="${param.registrationError}" class="alert alert-danger py-2 mb-2" role="alert">
+                Email already in use.
+              </div>
 
-            <button class="btn btn-success w-100">Register</button>
+              <input type="email" name="email" class="form-control mb-2" placeholder="Email" />
+              <input
+                type="password"
+                name="password"
+                class="form-control mb-2"
+                placeholder="Password"
+              />
+
+              <button type="submit" class="btn btn-success w-100">Register</button>
+            </form>
 
             <p class="mt-3">
               Already have an account?
@@ -62,5 +78,5 @@
     </div>
     <script th:src="@{/js/user.js}"></script>
   </body>
-  
+
 </html>
