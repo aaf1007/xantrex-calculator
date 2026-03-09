@@ -1,15 +1,90 @@
-.form-box{
-  width: 350px;
+/* Xantrex Brand Colors */
+:root {
+  --xan-navy: #1B3668;
+  --xan-light-blue: #b8d4e8;
+  --xan-white: #ffffff;
+  --xan-gray: #f5f5f5;
+}
+
+body {
+  background-color: var(--xan-gray);
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.xan-navbar {
+  background-color: var(--xan-navy);
+}
+.xan-navbar .navbar-brand {
+  color: var(--xan-white);
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+.xan-navbar .btn-outline-light:hover {
+  background-color: var(--xan-white);
+  color: var(--xan-navy);
+}
+
+/* Cards */
+.xan-card {
+  background: var(--xan-white);
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+.btn-xan {
+  background-color: var(--xan-navy);
+  border-color: var(--xan-navy);
+  color: var(--xan-white);
+}
+.btn-xan:hover {
+  background-color: #152a52;
+  border-color: #152a52;
+  color: var(--xan-white);
+}
+
+/* Tables */
+.xan-table thead {
+  background-color: var(--xan-navy);
+  color: var(--xan-white);
+}
+
+/* Footer */
+.xan-footer {
+  background-color: var(--xan-navy);
+  color: #ccc;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Login/Register slider */
+.form-box {
+  width: 380px;
   overflow: hidden;
 }
-
-.form-slider{
+.form-slider {
   display: flex;
   width: 200%;
-  transition: transform 0.5s ease;
+  transition: transform 0.4s ease;
 }
-
-.form-panel{
+.form-panel {
   width: 50%;
   padding: 30px;
+}
+
+/* Links */
+a.xan-link {
+  color: var(--xan-navy);
+}
+a.xan-link:hover {
+  text-decoration: underline;
+}
+
+/* Live metrics */
+.live-metric {
+  color: var(--xan-navy);
+  font-weight: bold;
+  font-size: 1.2rem;
 }
