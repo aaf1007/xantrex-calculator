@@ -4,37 +4,64 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Recommendation</title>
+    <title>Your Recommendation | Xantrex</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/css/user.css}" />
 </head>
 
-<!-- this is basic layout for now, the result card can contain the recommended controller details -->
-<body class="bg-light py-5">
-    <div class="container">
+<body class="d-flex flex-column min-vh-100 bg-xan-white">
+
+    <!-- Navbar -->
+    <nav class="xan-navbar navbar px-4">
+        <a class="navbar-brand" th:href="@{/calculator}">xantrex</a>
+    </nav>
+
+    <div class="container flex-grow-1 py-5">
         <div class="row justify-content-center">
             <div class="col-md-6 text-center">
-                <h3 class="mb-4">3. Recommended MPPT Solar Charge Controller:</h3>
+                <h2 class="xan-page-title mb-4">3. Recommended MPPT Solar Charge Controller</h2>
 
-                <div class="card p-5 shadow-lg border-0" th:if="${recommendedController != null}">                                                            
-                    <h2 class="fw-bold" th:text="${recommendedController.name}"></h2>                                                                         
-                    <p class="text-muted">Total Power: <span th:text="${result.totalPower}"></span> W</p>                                                     
-                    <p class="text-muted">Max VOC: <span th:text="${recommendedController.maxVoc}"></span> V</p>                                              
-                    <p class="text-muted">Max Current: <span th:text="${recommendedController.maxCurrent}"></span> A</p>                                      
-                    <p class="text-muted">Battery Bank: <span th:text="${recommendedController.batteryBank}"></span></p>                                      
-                </div>                                                                                                                                        
-                                                                                                                                              
-  <div class="card p-5 shadow-lg border-0" th:if="${recommendedController == null}">
-      <p class="text-danger fw-bold">No compatible controller found. Please adjust your specifications.</p>
-  </div>
+                <!-- Result found -->
+                <div class="xan-panel text-start" th:if="${recommendedController != null}">
+                    <h3 class="xan-title fw-bold text-center mb-4" th:text="${recommendedController.name}"></h3>
+                    <hr />
+                    <div class="row g-3 mt-1">
+                        <div class="col-6">
+                            <small class="text-muted d-block">TOTAL POWER</small>
+                            <span class="live-metric" th:text="${result.totalPower} + ' W'"></span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">MAX VOC</small>
+                            <span class="live-metric" th:text="${recommendedController.maxVoc} + ' V'"></span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">MAX CURRENT</small>
+                            <span class="live-metric" th:text="${recommendedController.maxCurrent} + ' A'"></span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">BATTERY BANK</small>
+                            <span class="live-metric" th:text="${recommendedController.batteryBank}"></span>
+                        </div>
+                    </div>
+                </div>
 
-                <a th:href="@{/calculator}" class="btn btn-link mt-3 text-decoration-none">← Adjust Specifications</a>
+                <!-- No result -->
+                <div class="xan-panel" th:if="${recommendedController == null}">
+                    <p class="text-danger fw-bold mb-0">No compatible controller found. Please adjust your specifications.</p>
+                </div>
+
+                <a th:href="@{/calculator}" class="btn btn-xan mt-4 px-4">← Adjust Specifications</a>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="xan-footer">
+    </footer>
 
 </body>
 
