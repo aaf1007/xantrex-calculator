@@ -9,6 +9,7 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
     <link rel="stylesheet" th:href="@{/css/user.css}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <title>Xantrex Calculator</title>
   </head>
 
@@ -36,7 +37,12 @@
               </div>
 
               <input type="email" name="email" class="form-control mb-3" placeholder="Email" />
-              <input type="password" name="password" class="form-control mb-3" placeholder="Password" />
+              <div class="input-group mb-3">
+                <input type="password" id="loginPassword" name="password" class="form-control" placeholder="Password" />
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('loginPassword', this)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
 
               <button type="submit" class="btn btn-xan w-100">Login</button>
             </form>
@@ -57,7 +63,12 @@
               </div>
 
               <input type="email" name="email" class="form-control mb-3" placeholder="Email" />
-              <input type="password" name="password" class="form-control mb-3" placeholder="Password" />
+              <div class="input-group mb-3">
+                <input type="password" id="registerPassword" name="password" class="form-control" placeholder="Password" />
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('registerPassword', this)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
 
               <button type="submit" class="btn btn-xan w-100">Register</button>
             </form>
@@ -76,6 +87,19 @@
     </footer>
 
     <script th:src="@{/js/user.js}"></script>
+    <script>
+      function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+      }
+    </script>
   </body>
 
 </html>
