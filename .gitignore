@@ -35,5 +35,6 @@ build/
 .vscode/
 .planning/
 
-
-.env 
+### Environment / secrets ###
+.env
+src/main/resources/application-local.properties
