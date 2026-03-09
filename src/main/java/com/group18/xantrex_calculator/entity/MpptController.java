@@ -15,6 +15,9 @@ public class MpptController {
     private Double maxIsc;
     private String batteryBank;
 
+    	public MpptController() {
+    }
+
     public MpptController(String name, Double maxVoc, Double maxCurrent, Double maxIsc, String batteryBank) {
         this.name = name;
         this.maxVoc = maxVoc;
@@ -23,7 +26,7 @@ public class MpptController {
         this.batteryBank = batteryBank;
     }
 
-	public Long getId() {
+    public Long getId() {
         return id;
     }
 
