@@ -10,25 +10,27 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/dashboard/**").hasAnyRole("INTERN", "CLIENT")
-                        .requestMatchers("/", "/register", "/calculator", "/css/**", "/js/**", "/images/**").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/")
-                        .loginProcessingUrl("/login")
-                        .usernameParameter("username")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/?error")
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .permitAll());
-        return http.build();
-    }
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/dashboard/**").hasAnyRole("INTERN", "CLIENT")
+                                                .requestMatchers("/", "/register", "/calculator", "/css/**", "/js/**",
+                                                                "/images/**")
+                                                .permitAll()
+                                                .anyRequest().authenticated())
+                                .formLogin(form -> form
+                                                .loginPage("/")
+                                                .loginProcessingUrl("/login")
+                                                .usernameParameter("email")
+                                                .defaultSuccessUrl("/dashboard", true)
+                                                .failureUrl("/?error")
+                                                .permitAll())
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/")
+                                                .permitAll());
+                return http.build();
+        }
 }
