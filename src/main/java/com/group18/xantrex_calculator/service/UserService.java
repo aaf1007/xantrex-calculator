@@ -23,19 +23,19 @@ public class UserService implements UserDetailsService {
     }
 
     public void register(String email, String password) {
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email.toLowerCase()).isPresent()) {
             throw new UserAlreadyExistsException("Email already registered: " + email);
         }
         User user = new User();
-        user.setEmail(email);
+        user.setEmail(email.toLowerCase());
         user.setPassword(passwordEncoder.encode(password));
-        user.setRole(email.endsWith("@sfu.ca") ? Role.INTERN : Role.CLIENT);
+        user.setRole(email.toLowerCase().endsWith("@sfu.ca") ? Role.INTERN : Role.CLIENT);
         userRepository.save(user);
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
