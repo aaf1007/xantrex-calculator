@@ -54,8 +54,19 @@
                         <option value="">Battery Bank</option>
                         <option value="12V">12V</option>
                         <option value="24V">24V</option>
+                        <option value="36V">36V</option>                                                                     
+                        <option value="48V">48V</option>                                                                     
+                        <option value="60V">60V</option>  
                     </select>
                 </div>
+                <div class="col-md-2">                                                                               
+                    <label class="form-label">Image URL</label>
+                    <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />               
+                </div>                                                                                
+                <div class="col-md-2">                                                                               
+                    <label class="form-label">Product URL</label>
+                    <input type="text" name="productUrl" class="form-control" placeholder="Product URL" />           
+                </div>  
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-xan w-100">Add</button>
                 </div>
@@ -73,6 +84,8 @@
                             <th>Max Current (A)</th>
                             <th>Max ISC (A)</th>
                             <th>Battery Bank</th>
+                            <th>Image</th>
+                            <th>Product URL</th>    
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -83,6 +96,8 @@
                             <td th:text="${controller.maxCurrent}"></td>
                             <td th:text="${controller.maxIsc}"></td>
                             <td th:text="${controller.batteryBank}"></td>
+                            <td><img th:src="${controller.imageUrl}" width="80" /></td>
+                            <td><a th:href="${controller.productUrl}" target="_blank">View</a></td> 
                             <td th:if="${isIntern}">
                                 <form th:action="@{/dashboard/delete}" method="post" style="display:inline;">
                                     <input type="hidden" name="id" th:value="${controller.id}" />
