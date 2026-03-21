@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.group18.xantrex_calculator.repository.MpptControllerRepository;
+import com.group18.xantrex_calculator.service.SolarPanelsService;
 
 import com.group18.xantrex_calculator.entity.MpptController;
 
@@ -14,14 +15,17 @@ import com.group18.xantrex_calculator.entity.MpptController;
 @RequestMapping("/dashboard")
 public class DashboardController {
     private final MpptControllerRepository controllerRepository;
+    private final SolarPanelsService solarPanelsService;
 
-    public DashboardController(MpptControllerRepository controllerRepository) {
+    public DashboardController(MpptControllerRepository controllerRepository, SolarPanelsService solarPanelsService) {
         this.controllerRepository = controllerRepository;
+        this.solarPanelsService = solarPanelsService;
     }
 
     @GetMapping
     public String dashboard(Model model) {
         model.addAttribute("controllers", controllerRepository.findAll());
+        model.addAttribute("panels", solarPanelsService.getAllPanels());
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isIntern = auth != null && auth.getAuthorities().stream()
