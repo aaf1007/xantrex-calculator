@@ -47,6 +47,13 @@
                             <span class="live-metric" th:text="${recommendedController.batteryBank}"></span>
                         </div>
                     </div>
+                    <div class="text-center mt-4">
+                        <img th:src="${recommendedController.imageUrl}" class="img-fluid mb-4" style="max-width: 300px;" />
+                        <div class="d-flex justify-content-center gap-3">
+                            <a th:href="${recommendedController.productUrl}" target="_blank" class="btn btn-xan px-4">Get More Info</a>
+                            <a href="https://xantrex.com/find-a-dealer/" target="_blank" class="btn btn-outline-secondary px-4">Find a Local Dealer</a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- No result -->

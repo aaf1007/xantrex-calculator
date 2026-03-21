@@ -46,7 +46,7 @@ public class CalculatorController {
 
         model.addAttribute("panels", solarPanelsService.getAllPanels());
         CalculatorResult result = calculatorService.calculate(pmax, voc, isc, series, parallel, battV, tempFactor);
-        Optional<MpptController> match = calculatorService.findMatchingController(result, battV == 12 ? "12V" : "24V");
+        Optional<MpptController> match = calculatorService.findMatchingController(result, String.valueOf(battV));
         model.addAttribute("result", result);
         model.addAttribute("recommendedController", match.orElse(null)); 
         return "result";

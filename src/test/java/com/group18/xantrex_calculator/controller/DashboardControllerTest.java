@@ -31,8 +31,8 @@ public class DashboardControllerTest {
     void testDashboard() throws Exception {
         // Arrange
         List<MpptController> controllers = Arrays.asList(
-            new MpptController("Controller1", 100.0, 100.0,100.0, "Type1"),
-            new MpptController("Controller2", 200.0, 120.0,105.0, "Type2")
+            new MpptController("Controller1", 100.0, 100.0,100.0, "Type1", null, null),
+            new MpptController("Controller2", 200.0, 120.0,105.0, "Type2", null, null)
         );
         when(controllerRepository.findAll()).thenReturn(controllers);
 
