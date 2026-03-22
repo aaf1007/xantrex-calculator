@@ -59,10 +59,11 @@
                   th:text="${panel.name} + ' (' + ${panel.pmax} + 'W)'"
                   th:data-pmax="${panel.pmax}"
                   th:data-voc="${panel.voc}"
-                  th:data-isc="${panel.isc}">
+                  th:data-isc="${panel.isc}"
+                  th:data-image="${panel.imageUrl}">
                   </option>
-                  
                 </select>
+                <img id="panelImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto" style="max-width: 400px; display: none;" />
               </div>
 
               <div class="mb-3">
@@ -169,6 +170,8 @@
                   >24V</label
                 >
               </div>
+                <img id="arrayImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto" style="max-width: 100%; display: none;" />
+
             </div>
           </div>
 
