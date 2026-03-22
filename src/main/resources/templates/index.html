@@ -47,13 +47,13 @@
               <button type="submit" class="btn btn-xan w-100">Login</button>
             </form>
 
-            <p class="mt-3 text-center">
+            <!-- <p class="mt-3 text-center">
               Don't have an account?
               <a href="#" class="xan-link" onclick="showRegister()">Create Account</a>
-            </p>
+            </p> -->
           </div>
 
-          <!-- REGISTER FORM -->
+          <!-- REGISTER FORM (DISABLED) — registration is managed via /dashboard/interns/add
           <div class="form-panel">
             <h3 class="mb-3" style="color: #1B3668;">Create Account</h3>
 
@@ -81,6 +81,7 @@
               <a href="#" class="xan-link" onclick="showLogin()">Login</a>
             </p>
           </div>
+          END REGISTER FORM (DISABLED) -->
         </div>
       </div>
     </div>
@@ -104,11 +105,13 @@
       }
     </script>
     <script>
+        /* Registration disabled — auto-show register panel commented out
         if (window.location.search.includes('signup') ||
             window.location.search.includes('domainError') ||
             window.location.search.includes('registrationError')) {
             showRegister();
         }
+        */
     </script>
   </body>
 

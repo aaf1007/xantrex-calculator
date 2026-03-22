@@ -10,6 +10,7 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
     <link rel="stylesheet" th:href="@{/css/user.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <title>Dashboard | Xantrex</title>
 </head>
 
@@ -25,6 +26,74 @@
 
     <div class="container flex-grow-1 py-4">
         <h2 class="text-center mb-4 xan-page-title">Controller Dashboard</h2>
+
+        <!-- Intern Management section (INTERN only) -->
+        <div th:if="${isIntern}" class="xan-panel mb-4">
+          <h5 class="mb-3 xan-title">Intern Management</h5>
+
+          <!-- Error alerts (above form) -->
+          <div th:if="${param.error != null && param.error[0] == 'self-delete'}" class="alert alert-danger py-2 mb-2" role="alert">
+            You cannot delete your own account.
+          </div>
+          <div th:if="${param.error != null && param.error[0] == 'invalid-domain'}" class="alert alert-danger py-2 mb-2" role="alert">
+            Only @xantrex.com email addresses are allowed.
+          </div>
+          <div th:if="${param.error != null && param.error[0] == 'duplicate'}" class="alert alert-danger py-2 mb-2" role="alert">
+            An account with that email already exists.
+          </div>
+          <div th:if="${param.error != null && param.error[0] == 'empty'}" class="alert alert-danger py-2 mb-2" role="alert">
+            Email and password are required.
+          </div>
+
+          <!-- Add Intern form -->
+          <form th:action="@{/dashboard/interns/add}" method="post" class="row g-2 align-items-end mb-3">
+            <div class="col-md-5">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" placeholder="intern@xantrex.com" required />
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Password</label>
+              <div class="input-group">
+                <input type="password" id="internPassword" name="password" class="form-control" placeholder="Password" required />
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('internPassword', this)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-xan w-100">Add Intern</button>
+            </div>
+          </form>
+
+          <!-- Intern list table -->
+          <div class="table-responsive">
+            <table class="table xan-table mt-2 mb-0">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="intern : ${interns}">
+                  <td th:text="${intern.email}"></td>
+                  <td>
+                    <!-- Delete button absent for logged-in user's own row -->
+                    <form th:if="${intern.email ne currentUserEmail}"
+                          th:action="@{/dashboard/interns/delete}" method="post" style="display:inline;">
+                      <input type="hidden" name="id" th:value="${intern.id}" />
+                      <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                <!-- Empty state -->
+                <tr th:if="${#lists.isEmpty(interns)}">
+                  <td colspan="2" class="text-center text-muted">No intern accounts found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <div th:if="${isIntern}" class="xan-panel mb-4">
             <h5 class="mb-3 xan-title">Add Controller</h5>
@@ -54,19 +123,19 @@
                         <option value="">Battery Bank</option>
                         <option value="12V">12V</option>
                         <option value="24V">24V</option>
-                        <option value="36V">36V</option>                                                                     
-                        <option value="48V">48V</option>                                                                     
-                        <option value="60V">60V</option>  
+                        <option value="36V">36V</option>
+                        <option value="48V">48V</option>
+                        <option value="60V">60V</option>
                     </select>
                 </div>
-                <div class="col-md-2">                                                                               
+                <div class="col-md-2">
                     <label class="form-label">Image URL</label>
-                    <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />               
-                </div>                                                                                
-                <div class="col-md-2">                                                                               
+                    <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />
+                </div>
+                <div class="col-md-2">
                     <label class="form-label">Product URL</label>
-                    <input type="text" name="productUrl" class="form-control" placeholder="Product URL" />           
-                </div>  
+                    <input type="text" name="productUrl" class="form-control" placeholder="Product URL" />
+                </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-xan w-100">Add</button>
                 </div>
@@ -114,7 +183,7 @@
                             <th>Max ISC (A)</th>
                             <th>Battery Bank</th>
                             <th>Image</th>
-                            <th>Product URL</th>    
+                            <th>Product URL</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -126,7 +195,7 @@
                             <td th:text="${controller.maxIsc}"></td>
                             <td th:text="${controller.batteryBank}"></td>
                             <td><img th:src="${controller.imageUrl}" width="80" /></td>
-                            <td><a th:href="${controller.productUrl}" target="_blank">View</a></td> 
+                            <td><a th:href="${controller.productUrl}" target="_blank">View</a></td>
                             <td th:if="${isIntern}">
                                 <form th:action="@{/dashboard/delete}" method="post" style="display:inline;">
                                     <input type="hidden" name="id" th:value="${controller.id}" />
@@ -177,6 +246,20 @@
     <!-- Footer -->
     <footer class="xan-footer">
     </footer>
+
+    <script>
+      function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+      }
+    </script>
 
 </body>
 

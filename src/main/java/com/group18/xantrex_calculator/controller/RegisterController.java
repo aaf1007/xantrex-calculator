@@ -25,6 +25,8 @@ public class RegisterController {
         return "index";
     }
 
+    // Registration disabled — intern accounts managed via /dashboard/interns/add
+    /*
     @PostMapping("/register")
     public String registerUser(@RequestParam String email,
                                @RequestParam String password, RedirectAttributes redirectAttributes) {
@@ -37,4 +39,5 @@ public class RegisterController {
             return "redirect:/login?domainError";
         }
     }
+    */
 }
