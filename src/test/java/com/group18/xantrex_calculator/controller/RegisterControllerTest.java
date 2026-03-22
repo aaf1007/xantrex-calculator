@@ -1,5 +1,6 @@
 package com.group18.xantrex_calculator.controller;
 
+import com.group18.xantrex_calculator.exception.InvalidDomainException;
 import com.group18.xantrex_calculator.exception.UserAlreadyExistsException;
 import com.group18.xantrex_calculator.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -28,45 +29,46 @@ class RegisterControllerTest {
         doNothing().when(userService).register(any(), any());
 
         String result = registerController.registerUser(
-                "new@gmail.com",
+                "new@xantrex.com",
                 "pass",
                 mock(RedirectAttributes.class)
         );
 
-        assertEquals("redirect:/?registered", result);
+        assertEquals("redirect:/login?registered", result);
     }
 
     @Test
     void registerUser_withDuplicateEmail_redirectsToRegistrationError() {
         doThrow(new UserAlreadyExistsException("dup"))
-                .when(userService).register(eq("dup@example.com"), any());
+                .when(userService).register(eq("dup@xantrex.com"), any());
 
         String result = registerController.registerUser(
-                "dup@example.com",
+                "dup@xantrex.com",
                 "pass",
                 mock(RedirectAttributes.class)
         );
 
-        assertEquals("redirect:/?registrationError", result);
+        assertEquals("redirect:/login?registrationError", result);
     }
 
     @Test
-    void registerUser_withSfuEmail_savesUserWithInternRole() {
+    void registerUser_withXantrexEmail_savesUser() {
         doNothing().when(userService).register(any(), any());
 
         String result = registerController.registerUser(
-                "student@sfu.ca",
+                "employee@xantrex.com",
                 "pass",
                 mock(RedirectAttributes.class)
         );
 
-        verify(userService).register(eq("student@sfu.ca"), eq("pass"));
-        assertEquals("redirect:/?registered", result);
+        verify(userService).register(eq("employee@xantrex.com"), eq("pass"));
+        assertEquals("redirect:/login?registered", result);
     }
 
     @Test
-    void registerUser_withGmailEmail_savesUserWithClientRole() {
-        doNothing().when(userService).register(any(), any());
+    void registerUser_withNonXantrexEmail_redirectsToDomainError() {
+        doThrow(new InvalidDomainException("bad domain"))
+                .when(userService).register(eq("user@gmail.com"), any());
 
         String result = registerController.registerUser(
                 "user@gmail.com",
@@ -74,7 +76,6 @@ class RegisterControllerTest {
                 mock(RedirectAttributes.class)
         );
 
-        verify(userService).register(eq("user@gmail.com"), eq("pass"));
-        assertEquals("redirect:/?registered", result);
+        assertEquals("redirect:/login?domainError", result);
     }
 }

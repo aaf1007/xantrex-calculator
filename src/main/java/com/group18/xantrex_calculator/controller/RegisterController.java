@@ -1,12 +1,14 @@
 package com.group18.xantrex_calculator.controller;
 
-import com.group18.xantrex_calculator.exception.UserAlreadyExistsException;
-import com.group18.xantrex_calculator.service.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.GetMapping;
+
+import com.group18.xantrex_calculator.exception.InvalidDomainException;
+import com.group18.xantrex_calculator.exception.UserAlreadyExistsException;
+import com.group18.xantrex_calculator.service.UserService;
 
 
 @Controller
@@ -31,6 +33,8 @@ public class RegisterController {
             return "redirect:/login?registered";
         } catch (UserAlreadyExistsException e) {
             return "redirect:/login?registrationError";
+        } catch (InvalidDomainException e) {
+            return "redirect:/login?domainError";
         }
     }
 }
