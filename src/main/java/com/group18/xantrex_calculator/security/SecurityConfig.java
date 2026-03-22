@@ -18,6 +18,7 @@ public class SecurityConfig {
                 .requestMatchers("/dashboard/**").hasAnyRole("INTERN", "CLIENT")
                 .requestMatchers("/", "/login", "/register", "/calculator", "/css/**", "/js/**", "/images/**")
                 .permitAll()
+                .requestMatchers("/api/weather/**").permitAll() 
                 .anyRequest().authenticated())
             .formLogin(form -> form
                 .loginPage("/login")
