@@ -162,6 +162,10 @@
                     <input type="number" step="0.01" name="isc" class="form-control" placeholder="Isc (A)" required />
                 </div>
                 <div class="col-md-3">
+                    <label class="form-label">Image URL</label>
+                    <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />
+                </div>
+                <div class="col-md-3">
                     <button type="submit" class="btn btn-xan">Add Solar Panel</button>
                 </div>
             </form>
@@ -214,6 +218,7 @@
                             <th>Max Power (W)</th>
                             <th>Open Circuit Voltage (V)</th>
                             <th>Short Circuit Current (A)</th>
+                            <th>Image</th>
                             <th th:if="${isIntern}">Actions</th>
                         </tr>
                     </thead>
@@ -223,6 +228,7 @@
                             <td th:text="${panel.pmax}"></td>
                             <td th:text="${panel.voc}"></td>
                             <td th:text="${panel.isc}"></td>
+                            <td><img th:src="${panel.imageUrl}" width="80" /></td>
                             <td th:if="${isIntern}">
                                 <form th:action="@{/dashboard/panels/delete}" method="post" style="display:inline;">
                                     <input type="hidden" name="id" th:value="${panel.id}" />

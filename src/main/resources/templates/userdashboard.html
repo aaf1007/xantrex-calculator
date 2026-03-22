@@ -1,212 +1,165 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Solar Configurator | Xantrex</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" th:href="@{/css/user.css}" />
-  </head>
-  <body class="d-flex flex-column min-vh-100 bg-xan-white">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-xan-white">
     <!-- Navbar -->
     <nav class="xan-navbar navbar px-4">
-      <a class="navbar-brand" th:href="@{/}">xantrex</a>
-      <div th:if="${!isLoggedIn}">
-        <a th:href="@{/login}" class="btn btn-outline-light btn-sm me-2"
-          >Login</a
-        >
-        <a th:href="@{/login?signup}" class="btn btn-light btn-sm">Sign Up</a>
-      </div>
-      <div th:if="${isLoggedIn}">
-        <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2"
-          >Dashboard</a
-        >
-        <form th:action="@{/logout}" method="post" style="display: inline">
-          <button type="submit" class="btn btn-outline-light btn-sm">
-            Logout
-          </button>
-        </form>
-      </div>
+        <a class="navbar-brand" th:href="@{/}">xantrex</a>
+        <div th:if="${!isLoggedIn}">
+            <a th:href="@{/login}" class="btn btn-outline-light btn-sm me-2">Login</a>
+            <a th:href="@{/login?signup}" class="btn btn-light btn-sm">Sign Up</a>
+        </div>
+        <div th:if="${isLoggedIn}">
+            <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+            <form th:action="@{/logout}" method="post" style="display: inline">
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                    Logout
+                </button>
+            </form>
+        </div>
     </nav>
 
     <div class="container flex-grow-1 py-4">
-      <h2 class="text-center mb-4 xan-page-title">
-        MPPT Solar Charge Controller Calculator
-      </h2>
+        <h2 class="text-center mb-4 xan-page-title">
+            MPPT Solar Charge Controller Calculator
+        </h2>
 
-      <form th:action="@{/calculator}" method="post">
-        <div class="row g-4">
-          <div class="col-md-6">
-            <div class="xan-panel h-100">
-              <h5 class="mb-3 xan-title">1. Single Panel Specifications</h5>
+        <form th:action="@{/calculator}" method="post">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="xan-panel h-100">
+                        <h5 class="mb-3 xan-title">1. Single Panel Specifications</h5>
 
-              <div class="mb-3">
-                <label class="form-label">Select Xantrex Solar Panel</label>
-                <select id="panelSelect" class="form-select">
-                  <option value="">-- Select Panel --</option>
-                  <option 
-                  th:each="panel : ${panels}"
-                  th:text="${panel.name} + ' (' + ${panel.pmax} + 'W)'"
-                  th:data-pmax="${panel.pmax}"
-                  th:data-voc="${panel.voc}"
-                  th:data-isc="${panel.isc}">
-                  </option>
-                  
-                </select>
-              </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Xantrex Solar Panel</label>
+                            <select id="panelSelect" class="form-select">
+                                <option value="">-- Select Panel --</option>
+                                <option th:each="panel : ${panels}"
+                                    th:text="${panel.name} + ' (' + ${panel.pmax} + 'W)'" th:data-pmax="${panel.pmax}"
+                                    th:data-voc="${panel.voc}" th:data-isc="${panel.isc}"th:data-image="${panel.imageUrl}">
 
-              <div class="mb-3">
-                <label class="form-label"
-                  >Maximum Power ( P<sub>max</sub> )</label
-                >
-                <div class="input-group">
-                  <input
-                    type="number"
-                    id="pmax"
-                    name="pmax"
-                    class="form-control"
-                    value="260"
-                  />
-                  <span class="input-group-text">W</span>
+                                </option>
+
+                            </select>
+                            <img id="panelImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto" style="max-width: 400px; display: none;" />
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Maximum Power ( P<sub>max</sub> )</label>
+                            <div class="input-group">
+                                <input type="number" id="pmax" name="pmax" class="form-control" value="260" />
+                                <span class="input-group-text">W</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Open Circuit Voltage ( V<sub>oc</sub> )</label>
+                            <div class="input-group">
+                                <input type="number" id="voc" name="voc" class="form-control" step="0.01"
+                                    value="19.83" />
+                                <span class="input-group-text">V</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Short Circuit Current ( I<sub>sc</sub> )</label>
+                            <div class="input-group">
+                                <input type="number" id="isc" name="isc" class="form-control" step="0.01"
+                                    value="19.83" />
+                                <span class="input-group-text">A</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
 
-              <div class="mb-3">
-                <label class="form-label"
-                  >Open Circuit Voltage ( V<sub>oc</sub> )</label
-                >
-                <div class="input-group">
-                  <input
-                    type="number"
-                    id="voc"
-                    name="voc"
-                    class="form-control"
-                    step="0.01"
-                    value="19.83"
-                  />
-                  <span class="input-group-text">V</span>
-                </div>
-              </div>
+                <div class="col-md-6">
+                    <div class="xan-panel h-100">
+                        <h5 class="mb-3 xan-title">2. Solar Array Configuration</h5>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Series Count</label>
+                                <input type="number" min="0" id="series" name="series" class="form-control" value="1" />
+                            </div>
 
-              <div class="mb-3">
-                <label class="form-label"
-                  >Short Circuit Current ( I<sub>sc</sub> )</label
-                >
-                <div class="input-group">
-                  <input
-                    type="number"
-                    id="isc"
-                    name="isc"
-                    class="form-control"
-                    step="0.01"
-                    value="19.83"
-                  />
-                  <span class="input-group-text">A</span>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Parallel Count</label>
+                                <input type="number" min="0" id="parallel" name="parallel" class="form-control"
+                                    value="1" />
+                            </div>
+                        </div>
+                        <label class="form-label d-block">Battery Bank Voltage</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="battV" id="batt12" value="12" checked />
+                            <label class="btn btn-outline-secondary" for="batt12">12V</label>
+                            <input type="radio" class="btn-check" name="battV" id="batt24" value="24" />
+                            <label class="btn btn-outline-secondary" for="batt24">24V</label>
+                        </div>
+                        
+                        <img id="arrayImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto" style="max-width: 100%; display: none;" />
+
+                        <h5 class="mb-3 mt-4 xan-title">3. Location</h5>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">City</label>
+                                <input type="text" id="city" name="city" class="form-control" value="Vancouver" />
+                            </div>
+
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Country Code</label>
+                                <input type="text" id="country" name="country" class="form-control"
+                                    placeholder="e.g. CA, US, GB" value="CA" maxlength="2" />
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-              </div>
+
+                <div class="col-12">
+                    <div class="xan-panel text-center">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">TOTAL POWER</small>
+                                <span id="totalWatts" class="live-metric">260 W</span>
+                            </div>
+
+                            <div class="col-md-4 border-start">
+                                <small class="text-muted d-block">ARRAY VOLTAGE (V<sub>oc</sub>)</small>
+                                <span id="totalVoc" class="live-metric">23.8 V</span>
+                            </div>
+
+                            <div class="col-md-4 border-start">
+                                <small class="text-muted d-block">MAX CHARGE CURRENT</small>
+                                <span id="maxAmps" class="live-metric">17.7 A</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
 
-          <div class="col-md-6">
-            <div class="xan-panel h-100">
-              <h5 class="mb-3 xan-title">2. Solar Array Configuration</h5>
-              <div class="row">
-                <div class="col-6 mb-3">
-                  <label class="form-label">Series Count</label>
-                  <input
-                    type="number"
-                    min="0"
-                    id="series"
-                    name="series"
-                    class="form-control"
-                    value="1"
-                  />
-                </div>
-
-                <div class="col-6 mb-3">
-                  <label class="form-label">Parallel Count</label>
-                  <input
-                    type="number"
-                    min="0"
-                    id="parallel"
-                    name="parallel"
-                    class="form-control"
-                    value="1"
-                  />
-                </div>
-              </div>
-              <label class="form-label d-block">Battery Bank Voltage</label>
-              <div class="btn-group w-100" role="group">
-                <input
-                  type="radio"
-                  class="btn-check"
-                  name="battV"
-                  id="batt12"
-                  value="12"
-                  checked
-                />
-                <label class="btn btn-outline-secondary" for="batt12"
-                  >12V</label
-                >
-                <input
-                  type="radio"
-                  class="btn-check"
-                  name="battV"
-                  id="batt24"
-                  value="24"
-                />
-                <label class="btn btn-outline-secondary" for="batt24"
-                  >24V</label
-                >
-              </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-xan btn-lg px-5">
+                    View Recommended Controller
+                </button>
             </div>
-          </div>
-
-          <div class="col-12">
-            <div class="xan-panel text-center">
-              <div class="row">
-                <div class="col-md-4">
-                  <small class="text-muted d-block">TOTAL POWER</small>
-                  <span id="totalWatts" class="live-metric">260 W</span>
-                </div>
-
-                <div class="col-md-4 border-start">
-                  <small class="text-muted d-block"
-                    >ARRAY VOLTAGE (V<sub>oc</sub>)</small
-                  >
-                  <span id="totalVoc" class="live-metric">23.8 V</span>
-                </div>
-
-                <div class="col-md-4 border-start">
-                  <small class="text-muted d-block">MAX CHARGE CURRENT</small>
-                  <span id="maxAmps" class="live-metric">17.7 A</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-center mt-4">
-          <input type="hidden" name="tempFactor" value="1.2" />
-          <button type="submit" class="btn btn-xan btn-lg px-5">
-            View Recommended Controller
-          </button>
-        </div>
-      </form>
+        </form>
     </div>
 
     <!-- Footer -->
     <footer class="xan-footer"></footer>
     <script th:src="@{/js/userdashboard.js}"></script>
-  </body>
+</body>
+
 </html>

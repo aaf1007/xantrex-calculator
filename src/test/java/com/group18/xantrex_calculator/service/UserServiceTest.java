@@ -47,7 +47,7 @@ class UserServiceTest {
     }
 
     @Test
-    void registerAssignsInternRoleForSfuEmail() {
+    void registerAssignsInternRoleForXantrexEmail() {
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(passwordEncoder.encode("pass")).thenReturn("hashed");
 
