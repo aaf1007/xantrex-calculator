@@ -2,6 +2,7 @@ package com.group18.xantrex_calculator.service;
 
 import com.group18.xantrex_calculator.entity.Role;
 import com.group18.xantrex_calculator.entity.User;
+import com.group18.xantrex_calculator.exception.InvalidDomainException;
 import com.group18.xantrex_calculator.exception.UserAlreadyExistsException;
 import com.group18.xantrex_calculator.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ class UserServiceTest {
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        userService.register("user@example.com", "raw");
+        userService.register("user@xantrex.com", "raw");
         verify(userRepository).save(captor.capture());
 
         assertEquals("hashed", captor.getValue().getPassword(),
@@ -51,56 +52,59 @@ class UserServiceTest {
         when(passwordEncoder.encode("pass")).thenReturn("hashed");
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        userService.register("student@sfu.ca", "pass");
+        userService.register("user@xantrex.com", "pass");
         verify(userRepository).save(captor.capture());
 
         assertEquals(Role.INTERN, captor.getValue().getRole(),
-                "@sfu.ca addresses should be assigned Role.INTERN");
+                "@xantrex.com addresses should be assigned Role.INTERN");
     }
 
     @Test
-    void registerAssignsClientRoleForOtherEmail() {
-        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
-        when(passwordEncoder.encode("pass")).thenReturn("hashed");
-
-        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        userService.register("user@gmail.com", "pass");
-        verify(userRepository).save(captor.capture());
-
-        assertEquals(Role.CLIENT, captor.getValue().getRole(),
-                "Non-SFU addresses should be assigned Role.CLIENT");
+    void registerThrowsForNonXantrexEmail() {
+        assertThrows(InvalidDomainException.class,
+                () -> userService.register("user@gmail.com", "pass"),
+                "register() must throw InvalidDomainException for non-xantrex emails");
+        verify(userRepository, never()).save(any());
     }
 
     @Test
     void registerThrowsOnDuplicateEmail() {
-        when(userRepository.findByEmail("dup@example.com")).thenReturn(Optional.of(new User()));
+        when(userRepository.findByEmail("dup@xantrex.com")).thenReturn(Optional.of(new User()));
 
         assertThrows(UserAlreadyExistsException.class,
-                () -> userService.register("dup@example.com", "pass"),
+                () -> userService.register("dup@xantrex.com", "pass"),
                 "register() must throw UserAlreadyExistsException when email already exists");
     }
 
     @Test
     void loadUserByUsernameReturnsUserDetails() {
         User user = new User();
-        user.setEmail("found@example.com");
+        user.setEmail("found@xantrex.com");
         user.setPassword("hashed");
-        user.setRole(Role.CLIENT);
+        user.setRole(Role.INTERN);
 
-        when(userRepository.findByEmail("found@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("found@xantrex.com")).thenReturn(Optional.of(user));
 
-        UserDetails details = userService.loadUserByUsername("found@example.com");
+        UserDetails details = userService.loadUserByUsername("found@xantrex.com");
 
-        assertEquals("found@example.com", details.getUsername(),
+        assertEquals("found@xantrex.com", details.getUsername(),
                 "Returned UserDetails username must match the queried email");
     }
 
     @Test
     void loadUserByUsernameThrowsForMissingUser() {
-        when(userRepository.findByEmail("nope@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("nope@xantrex.com")).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class,
-                () -> userService.loadUserByUsername("nope@example.com"),
+                () -> userService.loadUserByUsername("nope@xantrex.com"),
                 "loadUserByUsername() must throw UsernameNotFoundException for unknown emails");
+    }
+
+    @Test
+    void loadUserByUsernameThrowsForNonXantrexEmail() {
+        assertThrows(UsernameNotFoundException.class,
+                () -> userService.loadUserByUsername("user@gmail.com"),
+                "loadUserByUsername() must throw UsernameNotFoundException for non-xantrex emails");
+        verify(userRepository, never()).findByEmail(any());
     }
 }

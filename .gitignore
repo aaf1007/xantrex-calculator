@@ -5,6 +5,8 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+*.pdf
+.*
 
 ### STS ###
 .apt_generated
@@ -38,3 +40,4 @@ build/
 ### Environment / secrets ###
 .env
 src/main/resources/application-local.properties
+application.properties
