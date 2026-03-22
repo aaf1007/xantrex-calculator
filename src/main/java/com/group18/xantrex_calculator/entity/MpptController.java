@@ -14,16 +14,20 @@ public class MpptController {
     private Double maxCurrent;
     private Double maxIsc;
     private String batteryBank;
+    private String imageUrl;
+    private String productUrl;
 
-    	public MpptController() {
+    public MpptController() {
     }
 
-    public MpptController(String name, Double maxVoc, Double maxCurrent, Double maxIsc, String batteryBank) {
+    public MpptController(String name, Double maxVoc, Double maxCurrent, Double maxIsc, String batteryBank, String imageUrl, String productUrl) {
         this.name = name;
         this.maxVoc = maxVoc;
         this.maxCurrent = maxCurrent;
         this.maxIsc = maxIsc;
         this.batteryBank = batteryBank;
+        this.imageUrl = imageUrl;
+        this.productUrl = productUrl;
     }
 
     public Long getId() {
@@ -72,5 +76,21 @@ public class MpptController {
 
     public void setBatteryBank(String batteryBank) {
         this.batteryBank = batteryBank;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getProductUrl() {
+        return productUrl;
+    }
+
+    public void setProductUrl(String productUrl) {
+        this.productUrl = productUrl;
     }
 }

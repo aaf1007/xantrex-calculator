@@ -27,11 +27,11 @@ public class UserService implements UserDetailsService {
         if (!email.endsWith("@xantrex.com")) {
             throw new InvalidDomainException("Only @xantrex.com email addresses are allowed.");
         }
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email.toLowerCase()).isPresent()) {
             throw new UserAlreadyExistsException("Email already registered: " + email);
         }
         User user = new User();
-        user.setEmail(email);
+        user.setEmail(email.toLowerCase());
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.INTERN);
         userRepository.save(user);
@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
         if (!email.endsWith("@xantrex.com")) {
             throw new UsernameNotFoundException("User not found: " + email);
         }
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())

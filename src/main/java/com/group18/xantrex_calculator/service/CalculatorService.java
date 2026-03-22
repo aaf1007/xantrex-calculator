@@ -47,7 +47,7 @@ public class CalculatorService {
         List<MpptController> controllers = controllerRepository.findAll();
         MpptController best = null;
         for (MpptController c : controllers) {
-            if (c.getBatteryBank().equals(batteryBank)
+            if (c.getBatteryBank().contains(batteryBank)
                     && c.getMaxVoc() >= result.getCorrectedVoc()
                     && c.getMaxCurrent() >= result.getMaxChargeCurrent()
                     && c.getMaxIsc() >= result.getShortCircuitCurrent()) {
