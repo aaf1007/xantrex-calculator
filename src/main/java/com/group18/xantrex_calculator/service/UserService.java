@@ -24,14 +24,15 @@ public class UserService implements UserDetailsService {
     }
 
     public void register(String email, String password) {
-        if (!email.endsWith("@xantrex.com")) {
+        String normalizedEmail = email.toLowerCase();
+        if (!normalizedEmail.endsWith("@xantrex.com")) {
             throw new InvalidDomainException("Only @xantrex.com email addresses are allowed.");
         }
-        if (userRepository.findByEmail(email.toLowerCase()).isPresent()) {
-            throw new UserAlreadyExistsException("Email already registered: " + email);
+        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
+            throw new UserAlreadyExistsException("Email already registered: " + normalizedEmail);
         }
         User user = new User();
-        user.setEmail(email.toLowerCase());
+        user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.INTERN);
         userRepository.save(user);
@@ -39,11 +40,12 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        if (!email.endsWith("@xantrex.com")) {
-            throw new UsernameNotFoundException("User not found: " + email);
+        String normalizedEmail = email.toLowerCase();
+        if (!normalizedEmail.endsWith("@xantrex.com")) {
+            throw new UsernameNotFoundException("User not found: " + normalizedEmail);
         }
-        User user = userRepository.findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + normalizedEmail));
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())

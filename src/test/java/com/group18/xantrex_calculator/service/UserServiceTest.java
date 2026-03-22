@@ -107,4 +107,41 @@ class UserServiceTest {
                 "loadUserByUsername() must throw UsernameNotFoundException for non-xantrex emails");
         verify(userRepository, never()).findByEmail(any());
     }
+
+    @Test
+    void registerAcceptsMixedCaseXantrexEmail() {
+        when(userRepository.findByEmail("user@xantrex.com")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("pass")).thenReturn("hashed");
+
+        assertDoesNotThrow(() -> userService.register("User@XANTREX.COM", "pass"),
+                "register() must accept mixed-case @xantrex.com emails");
+
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void registerStoresEmailAsLowercase() {
+        when(userRepository.findByEmail("user@xantrex.com")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("pass")).thenReturn("hashed");
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        userService.register("User@Xantrex.COM", "pass");
+        verify(userRepository).save(captor.capture());
+
+        assertEquals("user@xantrex.com", captor.getValue().getEmail(),
+                "Email must be stored lowercase regardless of input case");
+    }
+
+    @Test
+    void loadUserByUsernameAcceptsMixedCaseEmail() {
+        User user = new User();
+        user.setEmail("user@xantrex.com");
+        user.setPassword("hashed");
+        user.setRole(Role.INTERN);
+
+        when(userRepository.findByEmail("user@xantrex.com")).thenReturn(Optional.of(user));
+
+        assertDoesNotThrow(() -> userService.loadUserByUsername("User@XANTREX.COM"),
+                "loadUserByUsername() must accept mixed-case @xantrex.com emails");
+    }
 }

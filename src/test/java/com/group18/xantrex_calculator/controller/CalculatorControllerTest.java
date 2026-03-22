@@ -3,6 +3,7 @@ package com.group18.xantrex_calculator.controller;
 import com.group18.xantrex_calculator.model.CalculatorResult;
 import com.group18.xantrex_calculator.entity.MpptController;
 import com.group18.xantrex_calculator.service.CalculatorService;
+import com.group18.xantrex_calculator.service.SolarPanelsService;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,9 @@ public class CalculatorControllerTest {
 
     @MockitoBean
     private CalculatorService calculatorService;
+
+    @MockitoBean
+    private SolarPanelsService solarPanelsService;
 
     @Test
     void testCalculatorPage() throws Exception {
@@ -56,7 +60,7 @@ public class CalculatorControllerTest {
                 260, 23.8, 10.0, 6, 2, 12, 1.0))
                 .thenReturn(result);
 
-        when(calculatorService.findMatchingController(result, "12V"))
+        when(calculatorService.findMatchingController(result, "12"))
                 .thenReturn(Optional.of(controller));
 
         mockMvc.perform(post("/calculator")
@@ -76,7 +80,7 @@ public class CalculatorControllerTest {
                 .calculate(260, 23.8, 10.0, 6, 2, 12, 1.0);
 
         verify(calculatorService, times(1))
-                .findMatchingController(result, "12V");
+                .findMatchingController(result, "12");
     }
 
     /*Test when no controller matches*/
