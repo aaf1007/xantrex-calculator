@@ -3,6 +3,7 @@ package com.group18.xantrex_calculator.controller;
 import com.group18.xantrex_calculator.model.CalculatorResult;
 import com.group18.xantrex_calculator.entity.MpptController;
 import com.group18.xantrex_calculator.service.CalculatorService;
+import com.group18.xantrex_calculator.service.SolarPanelsService;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,9 @@ public class CalculatorControllerTest {
 
     @MockitoBean
     private CalculatorService calculatorService;
+
+    @MockitoBean
+    private SolarPanelsService solarPanelsService;
 
     @Test
     void testCalculatorPage() throws Exception {

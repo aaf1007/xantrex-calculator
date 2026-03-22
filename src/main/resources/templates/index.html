@@ -61,6 +61,9 @@
               <div th:if="${param.registrationError}" class="alert alert-danger py-2 mb-2" role="alert">
                 Email already in use.
               </div>
+              <div th:if="${param.domainError}" class="alert alert-danger py-2 mb-2" role="alert">
+                Only @xantrex.com email addresses are allowed.
+              </div>
 
               <input type="email" name="email" class="form-control mb-3" placeholder="Email" required/>
               <div class="input-group mb-3">
@@ -100,9 +103,13 @@
         }
       }
     </script>
-    <script>                                                                                        
-        if (window.location.search.includes('signup')) showRegister();                                
-    </script>   
+    <script>
+        if (window.location.search.includes('signup') ||
+            window.location.search.includes('domainError') ||
+            window.location.search.includes('registrationError')) {
+            showRegister();
+        }
+    </script>
   </body>
 
 </html>
