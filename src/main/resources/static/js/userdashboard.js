@@ -13,6 +13,20 @@ const elements = {
     country: document.getElementById('country')
 };
 
+function updateArrayImage() {
+    const series = parseInt(elements.series.value) || 1;
+    const parallel = parseInt(elements.parallel.value) || 1;
+    const arrayImage = document.getElementById('arrayImage');
+
+    if (series >= 1 && series <= 6 && parallel >= 1 && parallel <= 4) {
+        arrayImage.src = `/images/panels/${series}S-${parallel}P-Solar-Panel-Array-Series-Parallel.webp`;
+        arrayImage.style.display = 'block';
+    } else {
+        arrayImage.style.display = 'none';
+    }
+}
+
+//calculation function
 let tempFactor = 1.2; // default temp factor for corrected Voc
 
 // Calculation function
@@ -31,6 +45,9 @@ function updateSummary() {
     elements.totalWatts.innerText = totalW + " W";
     elements.totalVoc.innerText = totalV + " V";
     elements.maxAmps.innerText = chargeA + " A";
+
+    updateArrayImage();
+
 }
 
 // Input listeners
@@ -51,6 +68,15 @@ elements.panelSelect.addEventListener('change', function () {
         elements.isc.value = isc;
         updateSummary();
     }
+    const image = selectedOption.getAttribute('data-image');
+    const panelImage = document.getElementById('panelImage');
+    if (image) {
+        panelImage.src = image;
+        panelImage.style.display = 'block';
+    } else {
+        panelImage.style.display = 'none';
+    }
+    updateArrayImage()
 });
 
 // Fetch minimum temperature from Open-Meteo via our backend.

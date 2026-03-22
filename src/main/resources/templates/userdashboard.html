@@ -48,10 +48,13 @@
                                 <option value="">-- Select Panel --</option>
                                 <option th:each="panel : ${panels}"
                                     th:text="${panel.name} + ' (' + ${panel.pmax} + 'W)'" th:data-pmax="${panel.pmax}"
-                                    th:data-voc="${panel.voc}" th:data-isc="${panel.isc}">
+                                    th:data-voc="${panel.voc}" th:data-isc="${panel.isc}"th:data-image="${panel.imageUrl}">
+
                                 </option>
 
                             </select>
+                            <img id="panelImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto" style="max-width: 400px; display: none;" />
+
                         </div>
 
                         <div class="mb-3">
@@ -104,6 +107,8 @@
                             <input type="radio" class="btn-check" name="battV" id="batt24" value="24" />
                             <label class="btn btn-outline-secondary" for="batt24">24V</label>
                         </div>
+                        
+                        <img id="arrayImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto" style="max-width: 100%; display: none;" />
 
                         <h5 class="mb-3 mt-4 xan-title">3. Location</h5>
                         <div class="row">

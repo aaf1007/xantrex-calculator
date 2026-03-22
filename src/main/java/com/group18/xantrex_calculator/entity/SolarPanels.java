@@ -14,16 +14,18 @@ public class SolarPanels {
     private double pmax;
     private double voc;
     private double isc;
+    private String imageUrl;
 
     public SolarPanels() {
 
     }
 
-    public SolarPanels(String name, double pmax, double voc, double isc) {
+    public SolarPanels(String name, double pmax, double voc, double isc, String imageUrl) {
         this.name = name;
         this.pmax = pmax;
         this.voc = voc;
         this.isc = isc;
+        this.imageUrl = imageUrl;
     }
 
     public Long getId() {
@@ -64,6 +66,14 @@ public class SolarPanels {
 
     public void setIsc(double isc) {
         this.isc = isc;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 }
