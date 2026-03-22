@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.group18.xantrex_calculator.entity.MpptController;
 import com.group18.xantrex_calculator.repository.MpptControllerRepository;
+import com.group18.xantrex_calculator.service.SolarPanelsService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,9 @@ public class DashboardControllerTest {
 
     @MockitoBean
     private MpptControllerRepository controllerRepository;
+
+    @MockitoBean
+    private SolarPanelsService solarPanelsService;
 
     @Test
     void testDashboard() throws Exception {
