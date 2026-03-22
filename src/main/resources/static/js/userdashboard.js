@@ -13,7 +13,7 @@ const elements = {
     country: document.getElementById('country')
 };
 
-// let tempFactor = 1.2; // default temp factor for corrected Voc
+let tempFactor = 1.2; // default temp factor for corrected Voc
 
 // Calculation function
 function updateSummary() {
