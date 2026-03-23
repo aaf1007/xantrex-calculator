@@ -4,6 +4,7 @@ import com.group18.xantrex_calculator.model.CalculatorResult;
 import com.group18.xantrex_calculator.entity.MpptController;
 import com.group18.xantrex_calculator.service.CalculatorService;
 import com.group18.xantrex_calculator.service.SolarPanelsService;
+import com.group18.xantrex_calculator.service.WeatherService;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +30,9 @@ public class CalculatorControllerTest {
 
     @MockitoBean
     private SolarPanelsService solarPanelsService;
+
+    @MockitoBean
+    private WeatherService weatherService;
 
     @Test
     void testCalculatorPage() throws Exception {
@@ -56,8 +60,10 @@ public class CalculatorControllerTest {
         controller.setMaxCurrent(250.0);
         controller.setMaxIsc(30.0);
 
+        when(weatherService.getMinTemperature("Vancouver", "CA")).thenReturn(5.0);
+
         when(calculatorService.calculate(
-                260, 23.8, 10.0, 6, 2, 12, 1.0))
+                260, 23.8, 10.0, 6, 2, 12, 1.2))
                 .thenReturn(result);
 
         when(calculatorService.findMatchingController(result, "12"))
@@ -70,14 +76,15 @@ public class CalculatorControllerTest {
                         .param("series", "6")
                         .param("parallel", "2")
                         .param("battV", "12")
-                        .param("tempFactor", "1.0"))
+                        .param("city", "Vancouver")
+                        .param("country", "CA"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("result"))
                 .andExpect(model().attributeExists("result"))
                 .andExpect(model().attributeExists("recommendedController"));
 
         verify(calculatorService, times(1))
-                .calculate(260, 23.8, 10.0, 6, 2, 12, 1.0);
+                .calculate(260, 23.8, 10.0, 6, 2, 12, 1.2);
 
         verify(calculatorService, times(1))
                 .findMatchingController(result, "12");

@@ -113,3 +113,37 @@ a.xan-link:hover {
 .bg-xan-white {
   background-color: var(--xan-white);
 }
+
+/* Tab strip */
+.xan-tab-strip {
+  display: flex;
+  border-bottom: 2px solid var(--xan-navy);
+  margin-bottom: 0;
+}
+
+.xan-tab-btn {
+  background-color: #f0f0f0;
+  color: var(--xan-navy);
+  font-weight: 400;
+  font-size: 1rem;
+  border: none;
+  min-height: 44px;
+  padding: 8px 24px;
+  cursor: pointer;
+}
+
+.xan-tab-btn.xan-tab-active {
+  background-color: var(--xan-navy);
+  color: var(--xan-white);
+  font-weight: 600;
+  margin-bottom: -2px;
+  border-bottom: 2px solid var(--xan-navy);
+}
+
+.xan-tab-btn:hover:not(.xan-tab-active) {
+  background-color: var(--xan-light-blue);
+}
+
+.xan-tab-panel {
+  padding-top: 0;
+}
