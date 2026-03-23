@@ -97,14 +97,14 @@ public class WeatherService {
                     .collect(Collectors.toList());
 
             if (temps.isEmpty()) {
-                return 20.0;
+                return 0;
             }
 
-            return temps.stream().mapToDouble(Double::doubleValue).min().orElse(20.0);
+            return temps.stream().mapToDouble(Double::doubleValue).min().orElse(0);
 
         } catch (Exception e) {
             System.err.println("WeatherService error for " + city + ": " + e.getMessage());
-            return 20.0;
+            return 0;
         }
     }
 
