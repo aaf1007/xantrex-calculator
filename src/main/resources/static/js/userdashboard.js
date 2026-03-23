@@ -106,10 +106,10 @@ async function fetchTemperature() {
             console.error("Could not parse temperature:", rawText);
             return;
         }
-
-        // add the actuall values from the chart 
-        if (minTemp < -10) tempFactor = 1.3;
-        else if (minTemp < 0) tempFactor = 1.25;
+ 
+        if (minTemp < -25) tempFactor = 1.2;
+        else if (minTemp < -10) tempFactor = 1.16;
+        else if (minTemp < 0) tempFactor = 1.12;
         else tempFactor = 1.2;
 
         updateSummary();
@@ -124,3 +124,68 @@ elements.country.addEventListener('change', fetchTemperature);
 
 fetchTemperature();
 updateSummary();
+
+// Error handling for location 
+const cityInput    = document.getElementById('city');
+    const countryInput = document.getElementById('country');
+    const errorBox     = document.getElementById('locationError');
+    const form         = document.querySelector('form[action*="calculator"]');
+ 
+    function showLocationError(message) {
+        errorBox.textContent = message;
+        errorBox.classList.remove('d-none');
+        cityInput.classList.add('is-invalid');
+        countryInput.classList.add('is-invalid');
+    }
+ 
+    function clearLocationError() {
+        errorBox.classList.add('d-none');
+        errorBox.textContent = '';
+        cityInput.classList.remove('is-invalid');
+        countryInput.classList.remove('is-invalid');
+    }
+
+    async function validateLocation() {
+        const city    = cityInput.value.trim();
+        const country = countryInput.value.trim();
+        if (!city || !country) return; 
+ 
+        try {
+            const res = await fetch(`/api/weather/min-temp?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}`);
+            if (res.ok) {
+                clearLocationError();
+            } else {
+                const msg = await res.text();
+                showLocationError(msg);
+            }
+        } catch (err) {
+            clearLocationError();
+        }
+    }
+ 
+    cityInput.addEventListener('blur', validateLocation);
+    countryInput.addEventListener('blur', validateLocation);
+ 
+    // Also block form submission if location is currently invalid
+    form.addEventListener('submit', async function (e) {
+        const city    = cityInput.value.trim();
+        const country = countryInput.value.trim();
+        if (!city || !country) return; 
+ 
+        e.preventDefault(); 
+ 
+        try {
+            const res = await fetch(`/api/weather/min-temp?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}`);
+            if (res.ok) {
+                clearLocationError();
+                form.submit(); 
+            } else {
+                const msg = await res.text();
+                showLocationError(msg);
+                
+                errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } catch (err) {
+            form.submit(); 
+        }
+    });
