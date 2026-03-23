@@ -42,7 +42,7 @@ public class CalculatorControllerTest {
                 .andExpect(view().name("userdashboard"));
     }
 
-    /* Test POST /calculator calculation*/
+    /* Test POST /calculator calculation */
     @Test
     void testCalculate() throws Exception {
 
@@ -50,8 +50,7 @@ public class CalculatorControllerTest {
                 3120.0,
                 142.8,
                 212.2,
-                20.0
-        );
+                20.0);
 
         MpptController controller = new MpptController();
         controller.setId(1L);
@@ -70,14 +69,14 @@ public class CalculatorControllerTest {
                 .thenReturn(Optional.of(controller));
 
         mockMvc.perform(post("/calculator")
-                        .param("pmax", "260")
-                        .param("voc", "23.8")
-                        .param("isc", "10.0")
-                        .param("series", "6")
-                        .param("parallel", "2")
-                        .param("battV", "12")
-                        .param("city", "Vancouver")
-                        .param("country", "CA"))
+                .param("pmax", "260")
+                .param("voc", "23.8")
+                .param("isc", "10.0")
+                .param("series", "6")
+                .param("parallel", "2")
+                .param("battV", "12")
+                .param("city", "Vancouver")
+                .param("country", "CA"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("result"))
                 .andExpect(model().attributeExists("result"))
@@ -90,5 +89,5 @@ public class CalculatorControllerTest {
                 .findMatchingController(result, "12");
     }
 
-    /*Test when no controller matches*/
+
 }

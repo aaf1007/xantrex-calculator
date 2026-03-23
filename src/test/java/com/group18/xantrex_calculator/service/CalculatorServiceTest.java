@@ -160,4 +160,24 @@ class CalculatorServiceTest {
 
         assertFalse(match.isPresent());
     }
+
+    @Test
+    void totalPower_seriesOnly_3panels() {
+        assertEquals(780.0, calculatorService.totalPower(260, 3, 1), 0.001);
+    }
+
+    @Test
+    void totalPower_parallelOnly_3panels() {
+        assertEquals(780.0, calculatorService.totalPower(260, 1, 3), 0.001);
+    }
+
+    @Test
+    void totalPower_seriesAndParallel_3x2() {
+        assertEquals(1560.0, calculatorService.totalPower(260, 3, 2), 0.001);
+    }
+
+    @Test
+    void totalPower_singlePanel_1x1() {
+        assertEquals(260.0, calculatorService.totalPower(260, 1, 1), 0.001);
+    }
 }
