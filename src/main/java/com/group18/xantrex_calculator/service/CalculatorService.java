@@ -35,7 +35,7 @@ public class CalculatorService {
     }
 
     public double maxChargeCurrent(double totalPower, int batteryVoltage) {
-        double chargeVoltage = (batteryVoltage == 12) ? 14.7 : 29.4;
+        double chargeVoltage = batteryVoltage == 12 ? 14.7 : batteryVoltage == 24 ? 29.4 : batteryVoltage == 36 ? 44.1 : 58.8;
         return totalPower / chargeVoltage;
     }
 

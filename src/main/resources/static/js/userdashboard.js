@@ -40,7 +40,7 @@ function updateSummary() {
 
     const totalW = pmax * series * parallel;
     const totalV = (voc * series * tempFactor).toFixed(1);
-    const chargeA = (totalW / (battV == 12 ? 14.7 : 29.4)).toFixed(1);
+    const chargeA = (totalW / (battV == 12 ? 14.7 : battV == 24 ? 29.4 : battV == 36 ? 44.1 : 58.8)).toFixed(1);
 
     elements.totalWatts.innerText = totalW + " W";
     elements.totalVoc.innerText = totalV + " V";
