@@ -25,220 +25,241 @@
     </nav>
 
     <div class="container flex-grow-1 py-4">
-        <h2 class="text-center mb-4 xan-page-title">Controller Dashboard</h2>
+        <h2 class="text-center mb-4 xan-page-title">Admin Dashboard</h2>
 
-        <!-- Intern Management section (INTERN only) -->
-        <div th:if="${isIntern}" class="xan-panel mb-4">
-          <h5 class="mb-3 xan-title">Intern Management</h5>
+        <!-- Tab strip -->
+        <div class="xan-tab-strip">
+          <button class="xan-tab-btn xan-tab-active" data-tab="controllers">MPPT Controllers</button>
+          <button class="xan-tab-btn" data-tab="panels">Solar Panels</button>
+          <button th:if="${isIntern}" class="xan-tab-btn" data-tab="interns">Intern Management</button>
+        </div>
 
-          <!-- Error alerts (above form) -->
-          <div th:if="${param.error != null && param.error[0] == 'self-delete'}" class="alert alert-danger py-2 mb-2" role="alert">
-            You cannot delete your own account.
-          </div>
-          <div th:if="${param.error != null && param.error[0] == 'invalid-domain'}" class="alert alert-danger py-2 mb-2" role="alert">
-            Only @xantrex.com email addresses are allowed.
-          </div>
-          <div th:if="${param.error != null && param.error[0] == 'duplicate'}" class="alert alert-danger py-2 mb-2" role="alert">
-            An account with that email already exists.
-          </div>
-          <div th:if="${param.error != null && param.error[0] == 'empty'}" class="alert alert-danger py-2 mb-2" role="alert">
-            Email and password are required.
-          </div>
+        <!-- Tab panel: MPPT Controllers (default visible) -->
+        <div id="controllers" class="xan-tab-panel" data-panel>
 
-          <!-- Add Intern form -->
-          <form th:action="@{/dashboard/interns/add}" method="post" class="row g-2 align-items-end mb-3">
-            <div class="col-md-5">
-              <label class="form-label">Email</label>
-              <input type="email" name="email" class="form-control" placeholder="intern@xantrex.com" required />
+            <div th:if="${isIntern}" class="xan-panel mb-4">
+                <h5 class="mb-3 xan-title">Add Controller</h5>
+                <form th:action="@{/dashboard/add}" method="post" class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Name" required />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Max VOC (V)</label>
+                        <input type="number" step="0.1" name="maxVoc" class="form-control" placeholder="Max VOC (V)"
+                            required />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Max Current (A)</label>
+                        <input type="number" step="0.1" name="maxCurrent" class="form-control" placeholder="Max Current (A)"
+                            required />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Max ISC (A)</label>
+                        <input type="number" step="0.1" name="maxIsc" class="form-control" placeholder="Max ISC (A)"
+                            required />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Battery Bank</label>
+                        <select name="batteryBank" class="form-select" required>
+                            <option value="">Battery Bank</option>
+                            <option value="12V">12V</option>
+                            <option value="24V">24V</option>
+                            <option value="36V">36V</option>
+                            <option value="48V">48V</option>
+                            <option value="60V">60V</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Image URL</label>
+                        <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Product URL</label>
+                        <input type="text" name="productUrl" class="form-control" placeholder="Product URL" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-xan w-100">Add Controller</button>
+                    </div>
+                </form>
             </div>
-            <div class="col-md-5">
-              <label class="form-label">Password</label>
-              <div class="input-group">
-                <input type="password" id="internPassword" name="password" class="form-control" placeholder="Password" required />
-                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('internPassword', this)">
-                  <i class="bi bi-eye"></i>
-                </button>
+
+            <div class="xan-panel">
+                <h5 class="mb-3 xan-title">Controllers</h5>
+                <div class="table-responsive">
+                    <table class="table xan-table mt-2 mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Max VOC (V)</th>
+                                <th>Max Current (A)</th>
+                                <th>Max ISC (A)</th>
+                                <th>Battery Bank</th>
+                                <th>Image</th>
+                                <th>Product URL</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="controller : ${controllers}">
+                                <td th:text="${controller.name}"></td>
+                                <td th:text="${controller.maxVoc}"></td>
+                                <td th:text="${controller.maxCurrent}"></td>
+                                <td th:text="${controller.maxIsc}"></td>
+                                <td th:text="${controller.batteryBank}"></td>
+                                <td><img th:src="${controller.imageUrl}" width="80" /></td>
+                                <td><a th:href="${controller.productUrl}" target="_blank">View</a></td>
+                                <td th:if="${isIntern}">
+                                    <form th:action="@{/dashboard/delete}" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" th:value="${controller.id}" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tab panel: Solar Panels (hidden by default) -->
+        <div id="panels" class="xan-tab-panel" data-panel style="display:none">
+
+            <div th:if="${isIntern}" class="xan-panel mb-4">
+                <h5 class="mb-3 xan-title">Add Solar Panel</h5>
+                <form th:action="@{/dashboard/panels/add}" method="post" class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Panel Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Panel Name" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Max Power (W)</label>
+                        <input type="number" step="0.1" name="pmax" class="form-control" placeholder="Max Power (W)" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Open Circuit Voltage (V)</label>
+                        <input type="number" step="0.1" name="voc" class="form-control" placeholder="Voc (V)" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Short Circuit Current (A)</label>
+                        <input type="number" step="0.01" name="isc" class="form-control" placeholder="Isc (A)" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Image URL</label>
+                        <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-xan">Add Solar Panel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="xan-panel mt-4">
+                <h5 class="mb-3 xan-title">Solar Panels</h5>
+                <div class="table-responsive">
+                    <table class="table xan-table mt-2 mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Max Power (W)</th>
+                                <th>Open Circuit Voltage (V)</th>
+                                <th>Short Circuit Current (A)</th>
+                                <th>Image</th>
+                                <th th:if="${isIntern}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="panel : ${panels}">
+                                <td th:text="${panel.name}"></td>
+                                <td th:text="${panel.pmax}"></td>
+                                <td th:text="${panel.voc}"></td>
+                                <td th:text="${panel.isc}"></td>
+                                <td><img th:src="${panel.imageUrl}" width="80" /></td>
+                                <td th:if="${isIntern}">
+                                    <form th:action="@{/dashboard/panels/delete}" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" th:value="${panel.id}" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tab panel: Intern Management (INTERN only, hidden by default) -->
+        <div th:if="${isIntern}" id="interns" class="xan-tab-panel" data-panel style="display:none">
+
+            <div class="xan-panel mb-4">
+              <h5 class="mb-3 xan-title">Intern Management</h5>
+
+              <!-- Error alerts (above form) -->
+              <div th:if="${param.error != null && param.error[0] == 'self-delete'}" class="alert alert-danger py-2 mb-2" role="alert">
+                You cannot delete your own account.
+              </div>
+              <div th:if="${param.error != null && param.error[0] == 'invalid-domain'}" class="alert alert-danger py-2 mb-2" role="alert">
+                Only @xantrex.com email addresses are allowed.
+              </div>
+              <div th:if="${param.error != null && param.error[0] == 'duplicate'}" class="alert alert-danger py-2 mb-2" role="alert">
+                An account with that email already exists.
+              </div>
+              <div th:if="${param.error != null && param.error[0] == 'empty'}" class="alert alert-danger py-2 mb-2" role="alert">
+                Email and password are required.
+              </div>
+
+              <!-- Add Intern form -->
+              <form th:action="@{/dashboard/interns/add}" method="post" class="row g-2 align-items-end mb-3">
+                <div class="col-md-5">
+                  <label class="form-label">Email</label>
+                  <input type="email" name="email" class="form-control" placeholder="intern@xantrex.com" required />
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label">Password</label>
+                  <div class="input-group">
+                    <input type="password" id="internPassword" name="password" class="form-control" placeholder="Password" required />
+                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('internPassword', this)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-xan w-100">Add Intern</button>
+                </div>
+              </form>
+
+              <!-- Intern list table -->
+              <div class="table-responsive">
+                <table class="table xan-table mt-2 mb-0">
+                  <thead>
+                    <tr>
+                      <th>Email</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="intern : ${interns}">
+                      <td th:text="${intern.email}"></td>
+                      <td>
+                        <!-- Delete button absent for logged-in user's own row -->
+                        <form th:if="${intern.email ne currentUserEmail}"
+                              th:action="@{/dashboard/interns/delete}" method="post" style="display:inline;">
+                          <input type="hidden" name="id" th:value="${intern.id}" />
+                          <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                    <!-- Empty state -->
+                    <tr th:if="${#lists.isEmpty(interns)}">
+                      <td colspan="2" class="text-center text-muted">No intern accounts found.</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-            <div class="col-md-2">
-              <button type="submit" class="btn btn-xan w-100">Add Intern</button>
-            </div>
-          </form>
 
-          <!-- Intern list table -->
-          <div class="table-responsive">
-            <table class="table xan-table mt-2 mb-0">
-              <thead>
-                <tr>
-                  <th>Email</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr th:each="intern : ${interns}">
-                  <td th:text="${intern.email}"></td>
-                  <td>
-                    <!-- Delete button absent for logged-in user's own row -->
-                    <form th:if="${intern.email ne currentUserEmail}"
-                          th:action="@{/dashboard/interns/delete}" method="post" style="display:inline;">
-                      <input type="hidden" name="id" th:value="${intern.id}" />
-                      <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                    </form>
-                  </td>
-                </tr>
-                <!-- Empty state -->
-                <tr th:if="${#lists.isEmpty(interns)}">
-                  <td colspan="2" class="text-center text-muted">No intern accounts found.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div th:if="${isIntern}" class="xan-panel mb-4">
-            <h5 class="mb-3 xan-title">Add Controller</h5>
-            <form th:action="@{/dashboard/add}" method="post" class="row g-2 align-items-end">
-                <div class="col-md-2">
-                    <label class="form-label">Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Name" required />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Max VOC (V)</label>
-                    <input type="number" step="0.1" name="maxVoc" class="form-control" placeholder="Max VOC (V)"
-                        required />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Max Current (A)</label>
-                    <input type="number" step="0.1" name="maxCurrent" class="form-control" placeholder="Max Current (A)"
-                        required />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Max ISC (A)</label>
-                    <input type="number" step="0.1" name="maxIsc" class="form-control" placeholder="Max ISC (A)"
-                        required />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Battery Bank</label>
-                    <select name="batteryBank" class="form-select" required>
-                        <option value="">Battery Bank</option>
-                        <option value="12V">12V</option>
-                        <option value="24V">24V</option>
-                        <option value="36V">36V</option>
-                        <option value="48V">48V</option>
-                        <option value="60V">60V</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Image URL</label>
-                    <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Product URL</label>
-                    <input type="text" name="productUrl" class="form-control" placeholder="Product URL" />
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-xan w-100">Add</button>
-                </div>
-            </form>
-        </div>
-
-        <div th:if="${isIntern}" class="xan-panel mb-4">
-            <h5 class="mb-3 xan-title">Add Solar Panel</h5>
-            <form th:action="@{/dashboard/panels/add}" method="post" class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">Panel Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Panel Name" required />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Max Power (W)</label>
-                    <input type="number" step="0.1" name="pmax" class="form-control" placeholder="Max Power (W)" required />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Open Circuit Voltage (V)</label>
-                    <input type="number" step="0.1" name="voc" class="form-control" placeholder="Voc (V)" required />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Short Circuit Current (A)</label>
-                    <input type="number" step="0.01" name="isc" class="form-control" placeholder="Isc (A)" required />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Image URL</label>
-                    <input type="text" name="imageUrl" class="form-control" placeholder="Image URL" />
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-xan">Add Solar Panel</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="xan-panel">
-            <h5 class="mb-3 xan-title">Controllers</h5>
-            <div class="table-responsive">
-                <table class="table xan-table mt-2 mb-0">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Max VOC (V)</th>
-                            <th>Max Current (A)</th>
-                            <th>Max ISC (A)</th>
-                            <th>Battery Bank</th>
-                            <th>Image</th>
-                            <th>Product URL</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="controller : ${controllers}">
-                            <td th:text="${controller.name}"></td>
-                            <td th:text="${controller.maxVoc}"></td>
-                            <td th:text="${controller.maxCurrent}"></td>
-                            <td th:text="${controller.maxIsc}"></td>
-                            <td th:text="${controller.batteryBank}"></td>
-                            <td><img th:src="${controller.imageUrl}" width="80" /></td>
-                            <td><a th:href="${controller.productUrl}" target="_blank">View</a></td>
-                            <td th:if="${isIntern}">
-                                <form th:action="@{/dashboard/delete}" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" th:value="${controller.id}" />
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="xan-panel mt-4">
-            <h5 class="mb-3 xan-title">Solar Panels</h5>
-            <div class="table-responsive">
-                <table class="table xan-table mt-2 mb-0">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Max Power (W)</th>
-                            <th>Open Circuit Voltage (V)</th>
-                            <th>Short Circuit Current (A)</th>
-                            <th>Image</th>
-                            <th th:if="${isIntern}">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="panel : ${panels}">
-                            <td th:text="${panel.name}"></td>
-                            <td th:text="${panel.pmax}"></td>
-                            <td th:text="${panel.voc}"></td>
-                            <td th:text="${panel.isc}"></td>
-                            <td><img th:src="${panel.imageUrl}" width="80" /></td>
-                            <td th:if="${isIntern}">
-                                <form th:action="@{/dashboard/panels/delete}" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" th:value="${panel.id}" />
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
     </div>
@@ -258,6 +279,39 @@
           input.type = 'password';
           icon.classList.replace('bi-eye-slash', 'bi-eye');
         }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var hash = window.location.hash.replace('#', '') || 'controllers';
+        activateTab(hash);
+
+        document.querySelectorAll('.xan-tab-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var tab = btn.getAttribute('data-tab');
+            window.location.hash = '#' + tab;
+            activateTab(tab);
+          });
+        });
+      });
+
+      function activateTab(tabId) {
+        var validTabs = ['controllers', 'panels', 'interns'];
+        if (validTabs.indexOf(tabId) === -1) { tabId = 'controllers'; }
+
+        // If the target panel doesn't exist in DOM (non-INTERN viewing #interns), fall back
+        var targetPanel = document.getElementById(tabId);
+        if (!targetPanel) { tabId = 'controllers'; }
+
+        document.querySelectorAll('.xan-tab-btn').forEach(function (b) {
+          if (b.getAttribute('data-tab') === tabId) {
+            b.classList.add('xan-tab-active');
+          } else {
+            b.classList.remove('xan-tab-active');
+          }
+        });
+        document.querySelectorAll('[data-panel]').forEach(function (p) {
+          p.style.display = (p.id === tabId) ? 'block' : 'none';
+        });
       }
     </script>
 

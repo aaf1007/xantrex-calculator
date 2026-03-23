@@ -21,23 +21,19 @@
   <body class="d-flex flex-column min-vh-100 bg-xan-white">
     <!-- Navbar -->
     <nav class="xan-navbar navbar px-4">
-      <a class="navbar-brand" th:href="@{/}">xantrex</a>
-      <div th:if="${!isLoggedIn}">
-        <a th:href="@{/login}" class="btn btn-outline-light btn-sm me-2"
-          >Login</a
-        >
-        <a th:href="@{/login?signup}" class="btn btn-light btn-sm">Sign Up</a>
-      </div>
-      <div th:if="${isLoggedIn}">
-        <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2"
-          >Dashboard</a
-        >
-        <form th:action="@{/logout}" method="post" style="display: inline">
-          <button type="submit" class="btn btn-outline-light btn-sm">
-            Logout
-          </button>
-        </form>
-      </div>
+        <a class="navbar-brand" th:href="@{/}">xantrex</a>
+        <div th:if="${!isLoggedIn}">
+            <a th:href="@{/login}" class="btn btn-outline-light btn-sm me-2">Login</a>
+            <!-- <a th:href="@{/login?signup}" class="btn btn-light btn-sm">Sign Up</a> -->
+        </div>
+        <div th:if="${isLoggedIn}">
+            <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+            <form th:action="@{/logout}" method="post" style="display: inline">
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                    Logout
+                </button>
+            </form>
+        </div>
     </nav>
 
     <div class="container flex-grow-1 py-4">
