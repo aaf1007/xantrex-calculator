@@ -425,6 +425,34 @@
           >
             Email and password are required.
           </div>
+          <div
+            th:if="${param.error != null && param.error[0] == 'wrong-password'}"
+            class="alert alert-danger py-2 mb-2"
+            role="alert"
+          >
+            Current password is incorrect.
+          </div>
+          <div
+            th:if="${param.error != null && param.error[0] == 'password-mismatch'}"
+            class="alert alert-danger py-2 mb-2"
+            role="alert"
+          >
+            New passwords do not match.
+          </div>
+          <div
+            th:if="${param.error != null && param.error[0] == 'password-empty'}"
+            class="alert alert-danger py-2 mb-2"
+            role="alert"
+          >
+            All password fields are required.
+          </div>
+          <div
+            th:if="${param.success != null && param.success[0] == 'password-changed'}"
+            class="alert alert-success py-2 mb-2"
+            role="alert"
+          >
+            Password changed successfully.
+          </div>
 
           <!-- Add Admin form -->
           <form
@@ -482,7 +510,18 @@
                 <tr th:each="admin : ${admins}">
                   <td th:text="${admin.email}"></td>
                   <td>
-                    <!-- Delete button absent for logged-in user's own row -->
+                    <!-- Change Password button — own row only (ACCT-01) -->
+                    <button
+                      th:if="${admin.email == currentUserEmail}"
+                      type="button"
+                      class="btn btn-outline-primary btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#changePasswordModal"
+                    >
+                      Change Password
+                    </button>
+
+                    <!-- Delete button — other rows only (existing, unchanged) -->
                     <form
                       th:if="${admin.email ne currentUserEmail}"
                       th:action="@{/dashboard/admins/delete}"
@@ -545,6 +584,72 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Change Password Modal (ACCT-02) -->
+          <div class="modal fade" id="changePasswordModal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Change Password</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/dashboard/admins/change-password}" method="post"
+                      id="changePasswordForm">
+                  <div class="modal-body">
+                    <!-- Current password -->
+                    <div class="mb-3">
+                      <label class="form-label">Current Password</label>
+                      <div class="input-group">
+                        <input type="password" id="cpCurrent" name="currentPassword"
+                               class="form-control" required />
+                        <button type="button" class="btn btn-outline-secondary"
+                                aria-label="Toggle current password visibility"
+                                onclick="togglePassword('cpCurrent', this)">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- New password -->
+                    <div class="mb-3">
+                      <label class="form-label">New Password</label>
+                      <div class="input-group">
+                        <input type="password" id="cpNew" name="newPassword"
+                               class="form-control" required />
+                        <button type="button" class="btn btn-outline-secondary"
+                                aria-label="Toggle new password visibility"
+                                onclick="togglePassword('cpNew', this)">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Confirm new password -->
+                    <div class="mb-3">
+                      <label class="form-label">Confirm New Password</label>
+                      <div class="input-group">
+                        <input type="password" id="cpConfirm" name="confirmPassword"
+                               class="form-control" required />
+                        <button type="button" class="btn btn-outline-secondary"
+                                aria-label="Toggle confirm password visibility"
+                                onclick="togglePassword('cpConfirm', this)">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                      </div>
+                      <!-- Inline error for VALID-01 -->
+                      <div id="cpMismatchError" class="text-danger small mt-1"
+                           style="display:none">
+                        Passwords do not match.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Discard</button>
+                    <button type="submit" class="btn btn-xan">Update Password</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -566,8 +671,16 @@
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-        var hash = window.location.hash.replace("#", "") || "controllers";
-        activateTab(hash);
+        // Auto-activate admins tab for password-change redirects
+        var params = new URLSearchParams(window.location.search);
+        var pwErrors = ['wrong-password', 'password-mismatch', 'password-empty'];
+        if (params.get('success') === 'password-changed' ||
+            pwErrors.indexOf(params.get('error')) !== -1) {
+          activateTab('admins');
+        } else {
+          var hash = window.location.hash.replace("#", "") || "controllers";
+          activateTab(hash);
+        }
 
         document.querySelectorAll(".xan-tab-btn").forEach(function (btn) {
           btn.addEventListener("click", function () {
@@ -576,6 +689,27 @@
             activateTab(tab);
           });
         });
+      });
+
+      document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+        var newPw = document.getElementById('cpNew').value;
+        var confirmPw = document.getElementById('cpConfirm').value;
+        var errDiv = document.getElementById('cpMismatchError');
+        if (newPw !== confirmPw) {
+          e.preventDefault();
+          errDiv.style.display = 'block';
+        } else {
+          errDiv.style.display = 'none';
+        }
+      });
+
+      document.getElementById('changePasswordModal').addEventListener('shown.bs.modal', function() {
+        document.getElementById('cpCurrent').focus();
+      });
+
+      document.getElementById('changePasswordModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('changePasswordForm').reset();
+        document.getElementById('cpMismatchError').style.display = 'none';
       });
 
       function activateTab(tabId) {

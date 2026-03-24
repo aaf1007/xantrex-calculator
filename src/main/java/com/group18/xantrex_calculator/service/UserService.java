@@ -5,6 +5,7 @@ import com.group18.xantrex_calculator.entity.User;
 import com.group18.xantrex_calculator.exception.InvalidDomainException;
 import com.group18.xantrex_calculator.exception.UserAlreadyExistsException;
 import com.group18.xantrex_calculator.repository.UserRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,6 +36,17 @@ public class UserService implements UserDetailsService {
         user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.ADMIN);
+        userRepository.save(user);
+    }
+
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        String normalizedEmail = email.toLowerCase();
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + normalizedEmail));
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new BadCredentialsException("Current password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 

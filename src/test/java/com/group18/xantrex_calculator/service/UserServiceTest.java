@@ -11,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -143,5 +144,48 @@ class UserServiceTest {
 
         assertDoesNotThrow(() -> userService.loadUserByUsername("User@XANTREX.COM"),
                 "loadUserByUsername() must accept mixed-case @xantrex.com emails");
+    }
+
+    @Test
+    void changePassword_success_encodesAndSaves() {
+        User user = new User();
+        user.setEmail("admin@xantrex.com");
+        user.setPassword("old-hashed");
+
+        when(userRepository.findByEmail("admin@xantrex.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("oldPass", "old-hashed")).thenReturn(true);
+        when(passwordEncoder.encode("newPass")).thenReturn("new-hashed");
+
+        userService.changePassword("admin@xantrex.com", "oldPass", "newPass");
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+        assertEquals("new-hashed", captor.getValue().getPassword(),
+                "changePassword must save BCrypt-encoded new password");
+    }
+
+    @Test
+    void changePassword_wrongCurrentPassword_throwsBadCredentials() {
+        User user = new User();
+        user.setEmail("admin@xantrex.com");
+        user.setPassword("stored-hashed");
+
+        when(userRepository.findByEmail("admin@xantrex.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrongPass", "stored-hashed")).thenReturn(false);
+
+        assertThrows(BadCredentialsException.class,
+                () -> userService.changePassword("admin@xantrex.com", "wrongPass", "newPass"),
+                "changePassword must throw BadCredentialsException when current password is wrong");
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void changePassword_userNotFound_throwsUsernameNotFound() {
+        when(userRepository.findByEmail("noone@xantrex.com")).thenReturn(Optional.empty());
+
+        assertThrows(UsernameNotFoundException.class,
+                () -> userService.changePassword("noone@xantrex.com", "anyPass", "newPass"),
+                "changePassword must throw UsernameNotFoundException when user does not exist");
+        verify(userRepository, never()).save(any());
     }
 }
