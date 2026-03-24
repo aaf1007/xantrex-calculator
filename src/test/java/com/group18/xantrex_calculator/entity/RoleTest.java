@@ -9,13 +9,13 @@ class RoleTest {
     @Test
     void roleEnumHasThreeValues() {
         assertEquals(3, Role.values().length,
-                "Role enum must contain exactly three values: CLIENT, INTERN, USER");
+                "Role enum must contain exactly three values: CLIENT, ADMIN, USER");
     }
 
     @Test
     void roleEnumContainsExpectedValues() {
         assertNotNull(Role.CLIENT);
-        assertNotNull(Role.INTERN);
+        assertNotNull(Role.ADMIN);
         assertNotNull(Role.USER);
     }
 }

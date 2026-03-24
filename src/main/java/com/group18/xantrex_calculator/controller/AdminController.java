@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/dashboard")
-@PreAuthorize("hasRole('INTERN')")
-public class InternController {
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminController {
 
     private final UserService userService;
     private final UserRepository userRepository;
 
-    public InternController(UserService userService, UserRepository userRepository) {
+    public AdminController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/interns/add")
-    public String addIntern(@RequestParam String email,
-                            @RequestParam String password,
-                            Authentication authentication) {
+    @PostMapping("/admins/add")
+    public String addAdmin(@RequestParam String email,
+                           @RequestParam String password,
+                           Authentication authentication) {
         if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             return "redirect:/dashboard?error=empty";
         }
@@ -39,8 +39,8 @@ public class InternController {
         return "redirect:/dashboard";
     }
 
-    @PostMapping("/interns/delete")
-    public String deleteIntern(@RequestParam Long id, Authentication authentication) {
+    @PostMapping("/admins/delete")
+    public String deleteAdmin(@RequestParam Long id, Authentication authentication) {
         return userRepository.findById(id)
                 .map(user -> {
                     if (user.getEmail().equalsIgnoreCase(authentication.getName())) {

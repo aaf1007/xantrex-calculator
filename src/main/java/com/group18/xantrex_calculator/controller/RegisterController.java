@@ -25,7 +25,7 @@ public class RegisterController {
         return "index";
     }
 
-    // Registration disabled — intern accounts managed via /dashboard/interns/add
+    // Registration disabled — admin accounts managed via /dashboard/admins/add
     /*
     @PostMapping("/register")
     public String registerUser(@RequestParam String email,

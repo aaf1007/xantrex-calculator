@@ -47,7 +47,7 @@ class UserServiceTest {
     }
 
     @Test
-    void registerAssignsInternRoleForXantrexEmail() {
+    void registerAssignsAdminRoleForXantrexEmail() {
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(passwordEncoder.encode("pass")).thenReturn("hashed");
 
@@ -55,8 +55,8 @@ class UserServiceTest {
         userService.register("user@xantrex.com", "pass");
         verify(userRepository).save(captor.capture());
 
-        assertEquals(Role.INTERN, captor.getValue().getRole(),
-                "@xantrex.com addresses should be assigned Role.INTERN");
+        assertEquals(Role.ADMIN, captor.getValue().getRole(),
+                "@xantrex.com addresses should be assigned Role.ADMIN");
     }
 
     @Test
@@ -81,7 +81,7 @@ class UserServiceTest {
         User user = new User();
         user.setEmail("found@xantrex.com");
         user.setPassword("hashed");
-        user.setRole(Role.INTERN);
+        user.setRole(Role.ADMIN);
 
         when(userRepository.findByEmail("found@xantrex.com")).thenReturn(Optional.of(user));
 
@@ -137,7 +137,7 @@ class UserServiceTest {
         User user = new User();
         user.setEmail("user@xantrex.com");
         user.setPassword("hashed");
-        user.setRole(Role.INTERN);
+        user.setRole(Role.ADMIN);
 
         when(userRepository.findByEmail("user@xantrex.com")).thenReturn(Optional.of(user));
 
