@@ -10,6 +10,8 @@ import com.group18.xantrex_calculator.service.UserService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -167,5 +169,80 @@ public class AdminControllerTest {
                 .andExpect(status().is3xxRedirection());
 
         verify(userRepository, never()).deleteById(anyLong());
+    }
+
+    // --- changePassword tests ---
+
+    @Test
+    void changePassword_success_redirectsWithSuccessParam() throws Exception {
+        doNothing().when(userService).changePassword(anyString(), anyString(), anyString());
+
+        UserDetails mockDetails = org.springframework.security.core.userdetails.User.builder()
+                .username("admin@xantrex.com")
+                .password("encoded")
+                .roles("ADMIN")
+                .build();
+        when(userService.loadUserByUsername("admin@xantrex.com")).thenReturn(mockDetails);
+
+        mockMvc.perform(post("/dashboard/admins/change-password")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("currentPassword", "oldPass")
+                        .param("newPassword", "newPass")
+                        .param("confirmPassword", "newPass"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?success=password-changed"));
+
+        verify(userService, times(1)).changePassword("admin@xantrex.com", "oldPass", "newPass");
+    }
+
+    @Test
+    void changePassword_emptyField_redirectsWithPasswordEmptyError() throws Exception {
+        mockMvc.perform(post("/dashboard/admins/change-password")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("currentPassword", "")
+                        .param("newPassword", "newPass")
+                        .param("confirmPassword", "newPass"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?error=password-empty"));
+
+        verify(userService, never()).changePassword(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void changePassword_mismatch_redirectsWithMismatchError() throws Exception {
+        mockMvc.perform(post("/dashboard/admins/change-password")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("currentPassword", "oldPass")
+                        .param("newPassword", "newPass")
+                        .param("confirmPassword", "differentPass"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?error=password-mismatch"));
+
+        verify(userService, never()).changePassword(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void changePassword_wrongCurrentPassword_redirectsWithWrongPasswordError() throws Exception {
+        doThrow(new BadCredentialsException("wrong"))
+                .when(userService).changePassword("admin@xantrex.com", "badPass", "newPass");
+
+        mockMvc.perform(post("/dashboard/admins/change-password")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("currentPassword", "badPass")
+                        .param("newPassword", "newPass")
+                        .param("confirmPassword", "newPass"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?error=wrong-password"));
+    }
+
+    @Test
+    void changePassword_unauthenticated_redirectsToLogin() throws Exception {
+        mockMvc.perform(post("/dashboard/admins/change-password")
+                        .param("currentPassword", "oldPass")
+                        .param("newPassword", "newPass")
+                        .param("confirmPassword", "newPass"))
+                .andExpect(status().is3xxRedirection());
+
+        verify(userService, never()).changePassword(anyString(), anyString(), anyString());
     }
 }
