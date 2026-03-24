@@ -26,6 +26,6 @@ class RegisterControllerTest {
 
     // Registration disabled — POST /register is commented out in RegisterController.
     // Tests for registerUser() are disabled alongside the endpoint.
-    // They will be restored or replaced when intern management endpoints (Plan 01-03)
+    // They will be restored or replaced when admin management endpoints
     // supersede the old public registration flow.
 }

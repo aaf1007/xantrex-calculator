@@ -42,14 +42,14 @@
           MPPT Controllers
         </button>
         <button class="xan-tab-btn" data-tab="panels">Solar Panels</button>
-        <button th:if="${isIntern}" class="xan-tab-btn" data-tab="interns">
-          Intern Management
+        <button th:if="${isAdmin}" class="xan-tab-btn" data-tab="admins">
+          Admin Management
         </button>
       </div>
 
       <!-- Tab panel: MPPT Controllers (default visible) -->
       <div id="controllers" class="xan-tab-panel" data-panel>
-        <div th:if="${isIntern}" class="xan-panel mb-4">
+        <div th:if="${isAdmin}" class="xan-panel mb-4">
           <h5 class="mb-3 xan-title">Add Controller</h5>
           <form
             th:action="@{/dashboard/add}"
@@ -171,7 +171,7 @@
                       >View</a
                     >
                   </td>
-                  <td th:if="${isIntern}">
+                  <td th:if="${isAdmin}">
                     <form
                       th:action="@{/dashboard/delete}"
                       method="post"
@@ -236,7 +236,7 @@
 
       <!-- Tab panel: Solar Panels (hidden by default) -->
       <div id="panels" class="xan-tab-panel" data-panel style="display: none">
-        <div th:if="${isIntern}" class="xan-panel mb-4">
+        <div th:if="${isAdmin}" class="xan-panel mb-4">
           <h5 class="mb-3 xan-title">Add Solar Panel</h5>
           <form
             th:action="@{/dashboard/panels/add}"
@@ -318,7 +318,7 @@
                   <th>Open Circuit Voltage (V)</th>
                   <th>Short Circuit Current (A)</th>
                   <th>Image</th>
-                  <th th:if="${isIntern}">Actions</th>
+                  <th th:if="${isAdmin}">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -328,7 +328,7 @@
                   <td th:text="${panel.voc}"></td>
                   <td th:text="${panel.isc}"></td>
                   <td><img th:src="${panel.imageUrl}" width="80" /></td>
-                  <td th:if="${isIntern}">
+                  <td th:if="${isAdmin}">
                     <form
                       th:action="@{/dashboard/panels/delete}"
                       method="post"
@@ -385,16 +385,16 @@
         </div>
       </div>
 
-      <!-- Tab panel: Intern Management (INTERN only, hidden by default) -->
+      <!-- Tab panel: Admin Management (ADMIN only, hidden by default) -->
       <div
-        th:if="${isIntern}"
-        id="interns"
+        th:if="${isAdmin}"
+        id="admins"
         class="xan-tab-panel"
         data-panel
         style="display: none"
       >
         <div class="xan-panel mb-4">
-          <h5 class="mb-3 xan-title">Intern Management</h5>
+          <h5 class="mb-3 xan-title">Admin Management</h5>
 
           <!-- Error alerts (above form) -->
           <div
@@ -426,9 +426,9 @@
             Email and password are required.
           </div>
 
-          <!-- Add Intern form -->
+          <!-- Add Admin form -->
           <form
-            th:action="@{/dashboard/interns/add}"
+            th:action="@{/dashboard/admins/add}"
             method="post"
             class="row g-2 align-items-end mb-3"
           >
@@ -438,7 +438,7 @@
                 type="email"
                 name="email"
                 class="form-control"
-                placeholder="intern@xantrex.com"
+                placeholder="admin@xantrex.com"
                 required
               />
             </div>
@@ -447,7 +447,7 @@
               <div class="input-group">
                 <input
                   type="password"
-                  id="internPassword"
+                  id="adminPassword"
                   name="password"
                   class="form-control"
                   placeholder="Password"
@@ -456,7 +456,7 @@
                 <button
                   type="button"
                   class="btn btn-outline-secondary"
-                  onclick="togglePassword('internPassword', this)"
+                  onclick="togglePassword('adminPassword', this)"
                 >
                   <i class="bi bi-eye"></i>
                 </button>
@@ -464,12 +464,12 @@
             </div>
             <div class="col-md-2">
               <button type="submit" class="btn btn-xan w-100">
-                Add Intern
+                Add Admin
               </button>
             </div>
           </form>
 
-          <!-- Intern list table -->
+          <!-- Admin list table -->
           <div class="table-responsive">
             <table class="table xan-table mt-2 mb-0">
               <thead>
@@ -479,23 +479,23 @@
                 </tr>
               </thead>
               <tbody>
-                <tr th:each="intern : ${interns}">
-                  <td th:text="${intern.email}"></td>
+                <tr th:each="admin : ${admins}">
+                  <td th:text="${admin.email}"></td>
                   <td>
                     <!-- Delete button absent for logged-in user's own row -->
                     <form
-                      th:if="${intern.email ne currentUserEmail}"
-                      th:action="@{/dashboard/interns/delete}"
+                      th:if="${admin.email ne currentUserEmail}"
+                      th:action="@{/dashboard/admins/delete}"
                       method="post"
                       style="display: inline"
                     >
-                      <input type="hidden" name="id" th:value="${intern.id}" />
+                      <input type="hidden" name="id" th:value="${admin.id}" />
 
                       <button
                         type="button"
                         class="btn btn-outline-danger btn-sm"
                         data-bs-toggle="modal"
-                        th:attr="data-bs-target='#deleteInternModal-' + ${intern.id}"
+                        th:attr="data-bs-target='#deleteAdminModal-' + ${admin.id}"
                       >
                         Delete
                       </button>
@@ -503,7 +503,7 @@
                       <!-- Modal -->
                       <div
                         class="modal fade"
-                        th:attr="id='deleteInternModal-' + ${intern.id}"
+                        th:attr="id='deleteAdminModal-' + ${admin.id}"
                       >
                         <div class="modal-dialog">
                           <div class="modal-content">
@@ -512,7 +512,7 @@
                             </div>
 
                             <div class="modal-body">
-                              Are you sure you want to delete this intern?
+                              Are you sure you want to delete this admin?
                             </div>
 
                             <div class="modal-footer">
@@ -537,9 +537,9 @@
                   </td>
                 </tr>
                 <!-- Empty state -->
-                <tr th:if="${#lists.isEmpty(interns)}">
+                <tr th:if="${#lists.isEmpty(admins)}">
                   <td colspan="2" class="text-center text-muted">
-                    No intern accounts found.
+                    No admin accounts found.
                   </td>
                 </tr>
               </tbody>
@@ -579,12 +579,12 @@
       });
 
       function activateTab(tabId) {
-        var validTabs = ["controllers", "panels", "interns"];
+        var validTabs = ["controllers", "panels", "admins"];
         if (validTabs.indexOf(tabId) === -1) {
           tabId = "controllers";
         }
 
-        // If the target panel doesn't exist in DOM (non-INTERN viewing #interns), fall back
+        // If the target panel doesn't exist in DOM (non-ADMIN viewing #admins), fall back
         var targetPanel = document.getElementById(tabId);
         if (!targetPanel) {
           tabId = "controllers";

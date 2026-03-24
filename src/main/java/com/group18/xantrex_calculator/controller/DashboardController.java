@@ -40,30 +40,30 @@ public class DashboardController {
         model.addAttribute("controllers", controllerRepository.findAll());
         model.addAttribute("panels", solarPanelsService.getAllPanels());
 
-        boolean isIntern = authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_INTERN") || a.getAuthority().equals("INTERN"));
-        model.addAttribute("isIntern", isIntern);
+        boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
 
         // Pass current user email so template can hide self-delete button
         model.addAttribute("currentUserEmail", authentication != null ? authentication.getName() : "");
 
-        // Fetch all users with INTERN role for the intern management table
-        List<User> interns = userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.INTERN)
+        // Fetch all users with ADMIN role for the admin management table
+        List<User> admins = userRepository.findAll().stream()
+                .filter(u -> u.getRole() == Role.ADMIN)
                 .collect(Collectors.toList());
-        model.addAttribute("interns", interns);
+        model.addAttribute("admins", admins);
         
         return "dashboard";
     }
 
-    @PreAuthorize("hasRole('INTERN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public String addController(@ModelAttribute MpptController controller) {
         controllerRepository.save(controller);
         return "redirect:/dashboard";
     }
 
-    @PreAuthorize("hasRole('INTERN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete")
     public String deleteController(@RequestParam Long id) {
         controllerRepository.deleteById(id);

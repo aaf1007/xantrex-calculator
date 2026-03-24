@@ -53,7 +53,7 @@ public class DashboardControllerTest {
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Act & Assert
-        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("INTERN")))
+        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("dashboard"))
                 .andExpect(model().attribute("controllers", hasSize(2)))
@@ -69,7 +69,7 @@ public class DashboardControllerTest {
     void testAddController() throws Exception {
         // Act & Assert
         mockMvc.perform(post("/dashboard/add")
-                        .with(user("test@xantrex.com").roles("INTERN"))
+                        .with(user("test@xantrex.com").roles("ADMIN"))
                         .param("id", "1")
                         .param("name", "New Controller")
                         .param("type", "Type1")
@@ -84,7 +84,7 @@ public class DashboardControllerTest {
     void testDeleteController() throws Exception {
         // Act & Assert
         mockMvc.perform(post("/dashboard/delete")
-                        .with(user("test@xantrex.com").roles("INTERN"))
+                        .with(user("test@xantrex.com").roles("ADMIN"))
                         .param("id", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard"));
@@ -93,13 +93,13 @@ public class DashboardControllerTest {
     }
 
     @Test
-    void testDashboard_setsIsInternTrue() throws Exception {
+    void testDashboard_setsIsAdminTrue() throws Exception {
         when(controllerRepository.findAll()).thenReturn(Collections.emptyList());
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("INTERN")))
+        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("isIntern", true));
+                .andExpect(model().attribute("isAdmin", true));
     }
 
     @Test
@@ -107,27 +107,27 @@ public class DashboardControllerTest {
         when(controllerRepository.findAll()).thenReturn(Collections.emptyList());
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("INTERN")))
+        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("currentUserEmail", "test@xantrex.com"));
     }
 
     @Test
-    void testDashboard_filtersInternsByRole() throws Exception {
-        User internUser = new User();
-        internUser.setEmail("intern@xantrex.com");
-        internUser.setRole(Role.INTERN);
+    void testDashboard_filtersAdminsByRole() throws Exception {
+        User adminUser = new User();
+        adminUser.setEmail("admin@xantrex.com");
+        adminUser.setRole(Role.ADMIN);
 
         User clientUser = new User();
         clientUser.setEmail("client@xantrex.com");
         clientUser.setRole(Role.CLIENT);
 
         when(controllerRepository.findAll()).thenReturn(Collections.emptyList());
-        when(userRepository.findAll()).thenReturn(Arrays.asList(internUser, clientUser));
+        when(userRepository.findAll()).thenReturn(Arrays.asList(adminUser, clientUser));
 
-        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("INTERN")))
+        mockMvc.perform(get("/dashboard").with(user("test@xantrex.com").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("interns", hasSize(1)));
+                .andExpect(model().attribute("admins", hasSize(1)));
     }
 
     @Test

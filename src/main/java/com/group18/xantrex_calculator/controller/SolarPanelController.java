@@ -9,7 +9,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/dashboard")
-@PreAuthorize("hasRole('INTERN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class SolarPanelController {
 
     private final SolarPanelsService solarPanelsService;

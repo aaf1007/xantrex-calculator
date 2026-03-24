@@ -24,9 +24,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(InternController.class)
+@WebMvcTest(AdminController.class)
 @Import(SecurityConfig.class)
-public class InternControllerTest {
+public class AdminControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,14 +37,14 @@ public class InternControllerTest {
     @MockitoBean
     private UserRepository userRepository;
 
-    // --- addIntern tests ---
+    // --- addAdmin tests ---
 
     @Test
-    void addIntern_success() throws Exception {
+    void addAdmin_success() throws Exception {
         doNothing().when(userService).register("new@xantrex.com", "secret");
 
-        mockMvc.perform(post("/dashboard/interns/add")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
+        mockMvc.perform(post("/dashboard/admins/add")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("email", "new@xantrex.com")
                         .param("password", "secret"))
                 .andExpect(status().is3xxRedirection())
@@ -54,9 +54,9 @@ public class InternControllerTest {
     }
 
     @Test
-    void addIntern_emptyEmail_redirectsWithError() throws Exception {
-        mockMvc.perform(post("/dashboard/interns/add")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
+    void addAdmin_emptyEmail_redirectsWithError() throws Exception {
+        mockMvc.perform(post("/dashboard/admins/add")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("email", "")
                         .param("password", "secret"))
                 .andExpect(status().is3xxRedirection())
@@ -66,10 +66,10 @@ public class InternControllerTest {
     }
 
     @Test
-    void addIntern_emptyPassword_redirectsWithError() throws Exception {
-        mockMvc.perform(post("/dashboard/interns/add")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
-                        .param("email", "intern@xantrex.com")
+    void addAdmin_emptyPassword_redirectsWithError() throws Exception {
+        mockMvc.perform(post("/dashboard/admins/add")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("email", "admin@xantrex.com")
                         .param("password", ""))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard?error=empty"));
@@ -78,12 +78,12 @@ public class InternControllerTest {
     }
 
     @Test
-    void addIntern_invalidDomain_redirectsWithError() throws Exception {
+    void addAdmin_invalidDomain_redirectsWithError() throws Exception {
         doThrow(new InvalidDomainException("bad domain"))
                 .when(userService).register("outsider@gmail.com", "pass");
 
-        mockMvc.perform(post("/dashboard/interns/add")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
+        mockMvc.perform(post("/dashboard/admins/add")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("email", "outsider@gmail.com")
                         .param("password", "pass"))
                 .andExpect(status().is3xxRedirection())
@@ -91,12 +91,12 @@ public class InternControllerTest {
     }
 
     @Test
-    void addIntern_duplicateEmail_redirectsWithError() throws Exception {
+    void addAdmin_duplicateEmail_redirectsWithError() throws Exception {
         doThrow(new UserAlreadyExistsException("already exists"))
                 .when(userService).register("dup@xantrex.com", "pass");
 
-        mockMvc.perform(post("/dashboard/interns/add")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
+        mockMvc.perform(post("/dashboard/admins/add")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("email", "dup@xantrex.com")
                         .param("password", "pass"))
                 .andExpect(status().is3xxRedirection())
@@ -104,26 +104,26 @@ public class InternControllerTest {
     }
 
     @Test
-    void addIntern_unauthenticated_redirectsToLogin() throws Exception {
-        mockMvc.perform(post("/dashboard/interns/add")
-                        .param("email", "intern@xantrex.com")
+    void addAdmin_unauthenticated_redirectsToLogin() throws Exception {
+        mockMvc.perform(post("/dashboard/admins/add")
+                        .param("email", "admin@xantrex.com")
                         .param("password", "pass"))
                 .andExpect(status().is3xxRedirection());
 
         verify(userService, never()).register(anyString(), anyString());
     }
 
-    // --- deleteIntern tests ---
+    // --- deleteAdmin tests ---
 
     @Test
-    void deleteIntern_success() throws Exception {
+    void deleteAdmin_success() throws Exception {
         User target = new User();
         target.setEmail("other@xantrex.com");
-        target.setRole(Role.INTERN);
+        target.setRole(Role.ADMIN);
         when(userRepository.findById(2L)).thenReturn(Optional.of(target));
 
-        mockMvc.perform(post("/dashboard/interns/delete")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
+        mockMvc.perform(post("/dashboard/admins/delete")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("id", "2"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard"));
@@ -132,14 +132,14 @@ public class InternControllerTest {
     }
 
     @Test
-    void deleteIntern_selfDelete_redirectsWithError() throws Exception {
+    void deleteAdmin_selfDelete_redirectsWithError() throws Exception {
         User self = new User();
         self.setEmail("admin@xantrex.com");
-        self.setRole(Role.INTERN);
+        self.setRole(Role.ADMIN);
         when(userRepository.findById(1L)).thenReturn(Optional.of(self));
 
-        mockMvc.perform(post("/dashboard/interns/delete")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
+        mockMvc.perform(post("/dashboard/admins/delete")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("id", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard?error=self-delete"));
@@ -148,11 +148,11 @@ public class InternControllerTest {
     }
 
     @Test
-    void deleteIntern_nonExistentId_redirectsToDashboard() throws Exception {
+    void deleteAdmin_nonExistentId_redirectsToDashboard() throws Exception {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(post("/dashboard/interns/delete")
-                        .with(user("admin@xantrex.com").roles("INTERN"))
+        mockMvc.perform(post("/dashboard/admins/delete")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("id", "999"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard"));
@@ -161,8 +161,8 @@ public class InternControllerTest {
     }
 
     @Test
-    void deleteIntern_unauthenticated_redirectsToLogin() throws Exception {
-        mockMvc.perform(post("/dashboard/interns/delete")
+    void deleteAdmin_unauthenticated_redirectsToLogin() throws Exception {
+        mockMvc.perform(post("/dashboard/admins/delete")
                         .param("id", "1"))
                 .andExpect(status().is3xxRedirection());
 
