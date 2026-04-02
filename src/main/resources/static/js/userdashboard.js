@@ -55,9 +55,28 @@ document.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', updateSummary);
 });
 
+// Function to lock/unlock fields based on panel selection
+function lockUnlockFields(isLocked) {
+    elements.pmax.readOnly = isLocked;
+    elements.voc.readOnly = isLocked;
+    elements.isc.readOnly = isLocked;
+    
+    // Add visual feedback
+    if (isLocked) {
+        elements.pmax.classList.add('bg-light');
+        elements.voc.classList.add('bg-light');
+        elements.isc.classList.add('bg-light');
+    } else {
+        elements.pmax.classList.remove('bg-light');
+        elements.voc.classList.remove('bg-light');
+        elements.isc.classList.remove('bg-light');
+    }
+}
+
 // Dropdown auto-fill logic
 elements.panelSelect.addEventListener('change', function () {
     const selectedOption = this.options[this.selectedIndex];
+    const selectedValue = this.value;
     const pmax = selectedOption.getAttribute('data-pmax');
     const voc = selectedOption.getAttribute('data-voc');
     const isc = selectedOption.getAttribute('data-isc');
@@ -66,8 +85,17 @@ elements.panelSelect.addEventListener('change', function () {
         elements.pmax.value = pmax;
         elements.voc.value = voc;
         elements.isc.value = isc;
+        
+        if (pmax == 0 && voc == 0 && isc == 0) {
+            lockUnlockFields(false); // Unlock fields for custom
+        } else {
+            lockUnlockFields(true); // Lock fields for Xantrex panels
+        }
         updateSummary();
+    } else if (selectedValue === '') {
+        lockUnlockFields(false);  // Unlock fields for empty selection
     }
+    
     const image = selectedOption.getAttribute('data-image');
     const panelImage = document.getElementById('panelImage');
     if (image) {
