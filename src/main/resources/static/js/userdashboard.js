@@ -55,6 +55,73 @@ document.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', updateSummary);
 });
 
+// Form validation before submission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const pmaxValue = elements.pmax.value.trim();
+    const vocValue = elements.voc.value.trim();
+    const iscValue = elements.isc.value.trim();
+    const cityValue = elements.city.value.trim();
+    const countryValue = elements.country.value.trim();
+    
+    let isValid = true;
+    let errorMessage = '';
+    
+    // Check if required numeric fields are empty or invalid
+    if (!pmaxValue || isNaN(parseFloat(pmaxValue)) || parseFloat(pmaxValue) <= 0) {
+        isValid = false;
+        errorMessage += 'Maximum Power (Pmax) must be a positive number. ';
+        elements.pmax.classList.add('is-invalid');
+    } else {
+        elements.pmax.classList.remove('is-invalid');
+    }
+    
+    if (!vocValue || isNaN(parseFloat(vocValue)) || parseFloat(vocValue) <= 0) {
+        isValid = false;
+        errorMessage += 'Open Circuit Voltage (Voc) must be a positive number. ';
+        elements.voc.classList.add('is-invalid');
+    } else {
+        elements.voc.classList.remove('is-invalid');
+    }
+    
+    if (!iscValue || isNaN(parseFloat(iscValue)) || parseFloat(iscValue) <= 0) {
+        isValid = false;
+        errorMessage += 'Short Circuit Current (Isc) must be a positive number. ';
+        elements.isc.classList.add('is-invalid');
+    } else {
+        elements.isc.classList.remove('is-invalid');
+    }
+    
+    if (!isValid) {
+        e.preventDefault(); // Prevent form submission
+        
+        // Show error messages in a user-friendly way
+        const errorContainer = document.createElement('div');
+        errorContainer.className = 'alert alert-danger mb-4';
+        errorContainer.innerHTML = '<strong>Please correct the following errors:</strong><ul>' + 
+            errorMessage.split('. ').filter(msg => msg.trim()).map(msg => '<li>' + msg + '.</li>').join('') + '</ul>';
+        
+        // Remove any existing error messages
+        const existingError = document.querySelector('.alert-danger');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // Add error message at the top of the form
+        const form = document.querySelector('form');
+        form.insertBefore(errorContainer, form.firstChild);
+        
+        // Scroll to top to show errors
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        return false;
+    }
+    
+    // If validation passes, ensure numeric fields have valid values
+    elements.pmax.value = parseFloat(pmaxValue);
+    elements.voc.value = parseFloat(vocValue);
+    elements.isc.value = parseFloat(iscValue);
+});
+
 // Function to lock/unlock fields based on panel selection
 function lockUnlockFields(isLocked) {
     elements.pmax.readOnly = isLocked;
