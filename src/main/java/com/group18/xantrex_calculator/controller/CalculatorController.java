@@ -38,15 +38,24 @@ public class CalculatorController {
 
     @PostMapping("/calculator")
     public String calculate(
-            @RequestParam double pmax,
-            @RequestParam double voc,
-            @RequestParam double isc,
-            @RequestParam int series,
-            @RequestParam int parallel,
-            @RequestParam int battV,
+            @RequestParam Double pmax,
+            @RequestParam Double voc,
+            @RequestParam Double isc,
+            @RequestParam Integer series,
+            @RequestParam Integer parallel,
+            @RequestParam Integer battV,
             @RequestParam String city,
             @RequestParam String country,
             Model model) {
+
+        // Validate required parameters
+        if (pmax == null || pmax <= 0 || voc == null || voc <= 0 || isc == null || isc <= 0 ||
+            series == null || series <= 0 || parallel == null || parallel <= 0 || battV == null) {
+            model.addAttribute("error", "All numeric fields must have valid positive values.");
+            model.addAttribute("isLoggedIn", true);
+            model.addAttribute("panels", solarPanelsService.getAllPanels());
+            return "userdashboard";
+        }
 
         // Calculate temperature factor based on minimum temperature
         double minTemp = weatherService.getMinTemperature(city, country);
