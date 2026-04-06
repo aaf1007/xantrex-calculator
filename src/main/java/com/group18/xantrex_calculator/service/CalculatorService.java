@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.group18.xantrex_calculator.model.CalculatorResult;
 import com.group18.xantrex_calculator.entity.MpptController;
 import com.group18.xantrex_calculator.repository.MpptControllerRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +42,25 @@ public class CalculatorService {
 
     public double shortCircuitCurrent(double isc, int parallel) {
         return isc * parallel;
+    }
+
+    public List<MpptController> findAllCompatibleControllers(CalculatorResult result, String batteryBank) {
+        List<MpptController> controllers = controllerRepository.findAll();
+        List<MpptController> compatible = new ArrayList<>();
+        for (MpptController c : controllers) {
+            if (c.getBatteryBank() == null || c.getMaxVoc() == null
+                    || c.getMaxCurrent() == null || c.getMaxIsc() == null) {
+                continue;
+            }
+            if (c.getBatteryBank().contains(batteryBank)
+                    && c.getMaxVoc() >= result.getCorrectedVoc()
+                    && c.getMaxCurrent() >= result.getMaxChargeCurrent()
+                    && c.getMaxIsc() >= result.getShortCircuitCurrent()) {
+                compatible.add(c);
+            }
+        }
+        compatible.sort((a, b) -> Double.compare(a.getMaxVoc(), b.getMaxVoc()));
+        return compatible;
     }
 
     public Optional<MpptController> findMatchingController(CalculatorResult result, String batteryBank) {

@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.security.core.Authentication;
 
@@ -62,13 +63,17 @@ public class CalculatorController {
         double tempFactor = calculateTemperatureFactor(minTemp);
 
         model.addAttribute("panels", solarPanelsService.getAllPanels());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isLoggedIn = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
+        model.addAttribute("isLoggedIn", isLoggedIn);
         CalculatorResult result = calculatorService.calculate(pmax, voc, isc, series, parallel, battV, tempFactor);
-        Optional<MpptController> match = calculatorService.findMatchingController(result, String.valueOf(battV));
+        List<MpptController> compatibleControllers = calculatorService.findAllCompatibleControllers(result, String.valueOf(battV));
         model.addAttribute("result", result);
-        model.addAttribute("recommendedController", match.orElse(null));
+        model.addAttribute("compatibleControllers", compatibleControllers);
+        model.addAttribute("recommendedController", compatibleControllers.isEmpty() ? null : compatibleControllers.get(0));
         model.addAttribute("minTemp", minTemp);
         model.addAttribute("tempFactor", tempFactor);
-        return "result";
+        return "userdashboard";
     }
 
     private double calculateTemperatureFactor(double minTemp) {

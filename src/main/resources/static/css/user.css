@@ -1,9 +1,11 @@
 /* Xantrex Brand Colors */
 :root {
-  --xan-navy: #113e7e;
-  --xan-light-blue: #b8d4e8;
-  --xan-white: #ffffff;
-  --xan-gray: #f5f5f5;
+    --xan-navy: #32373C;
+    --xan-teal: #0098B3;
+    --xan-dark-blue: #004182;
+    --xan-light-blue: #b8d4e8;
+    --xan-white: #ffffff;
+    --xan-gray: #f5f5f5;
 }
 /* DO NOT CHANGE BEYOND THIS  */
 
@@ -14,16 +16,17 @@ body {
 
 /* Navbar */
 .xan-navbar {
-  background-color: var(--xan-navy);
+    background-color: #003366;
+    border-bottom: none;
 }
 .xan-navbar .navbar-brand {
-  color: var(--xan-white);
-  font-weight: bold;
-  font-size: 1.5rem;
+    color: var(--xan-white);
+    font-weight: bold;
+    font-size: 1.5rem;
 }
 .xan-navbar .btn-outline-light:hover {
-  background-color: var(--xan-white);
-  color: var(--xan-navy);
+    background-color: var(--xan-dark-blue);
+    color: var(--xan-white);
 }
 
 /* Cards */
@@ -36,27 +39,30 @@ body {
 
 /* Buttons */
 .btn-xan {
-  background-color: var(--xan-navy);
-  border-color: var(--xan-navy);
-  color: var(--xan-white);
+    background-color: #003366;
+    border-color: #003366;
+    color: var(--xan-white);
+    border-radius: 9999px;
+    padding: calc(.667em + 2px) calc(1.333em + 2px);
+    font-size: 1.125em;
 }
 .btn-xan:hover {
-  background-color: #152a52;
-  border-color: #152a52;
-  color: var(--xan-white);
+    background-color: #004080;
+    border-color: #004080;
+    color: var(--xan-white);
 }
 
 /* Tables */
 .xan-table thead {
-  background-color: var(--xan-navy);
+  background-color: var(--xan-dark-blue);
   color: var(--xan-white);
 }
 
 /* Footer */
 .xan-footer {
-  background-color: var(--xan-navy);
+  background-color: var(--xan-dark-blue);
   color: #ccc;
-  padding: 1rem;
+  padding: 0.4rem;
   text-align: center;
 }
 
@@ -77,7 +83,7 @@ body {
 
 /* Links */
 a.xan-link {
-  color: var(--xan-navy);
+  color: var(--xan-dark-blue);
 }
 a.xan-link:hover {
   text-decoration: underline;
@@ -85,28 +91,29 @@ a.xan-link:hover {
 
 /* Live metrics */
 .live-metric {
-  color: var(--xan-navy);
-  font-weight: 700;
-  font-size: 1.2rem;
+    color: var(--xan-dark-blue);
+    font-weight: 700;
+    font-size: 1.875rem;
 }
 
 /* Gray panel cards (calculator) */
 .xan-panel {
   background-color: #f0f0f0;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 /* Section titles */
 .xan-title {
-  color: var(--xan-navy);
-  font-weight: 600;
+    color: var(--xan-dark-blue);
+    font-weight: 600;
 }
 
 /* Page title */
 .xan-page-title {
-  color: var(--xan-navy);
-  font-weight: 600;
+    color: var(--xan-dark-blue);
+    font-weight: 700;
+    font-size: 1.875rem;
 }
 
 /* White background body */
@@ -117,13 +124,13 @@ a.xan-link:hover {
 /* Tab strip */
 .xan-tab-strip {
   display: flex;
-  border-bottom: 2px solid var(--xan-navy);
+  border-bottom: 2px solid var(--xan-dark-blue);
   margin-bottom: 0;
 }
 
 .xan-tab-btn {
   background-color: #f0f0f0;
-  color: var(--xan-navy);
+  color: var(--xan-dark-blue);
   font-weight: 400;
   font-size: 1rem;
   border: none;
@@ -133,11 +140,11 @@ a.xan-link:hover {
 }
 
 .xan-tab-btn.xan-tab-active {
-  background-color: var(--xan-navy);
-  color: var(--xan-white);
-  font-weight: 600;
-  margin-bottom: -2px;
-  border-bottom: 2px solid var(--xan-navy);
+    background-color: var(--xan-dark-blue);
+    color: var(--xan-white);
+    font-weight: 600;
+    margin-bottom: -2px;
+    border-bottom: 2px solid var(--xan-dark-blue);
 }
 
 .xan-tab-btn:hover:not(.xan-tab-active) {
@@ -146,4 +153,72 @@ a.xan-link:hover {
 
 .xan-tab-panel {
   padding-top: 0;
+}
+
+.form-control {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+.form-select {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.xan-section-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #003366;
+    color: #fff;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.xan-metric-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+}
+
+.xan-controller-card {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 2px solid #e5e7eb;
+    height: 100%;
+}
+
+.xan-controller-recommended {
+    border-color: #003366;
+    background-color: #ffffff;
+}
+
+.xan-controller-badge-slot {
+    min-height: 26px;
+}
+
+.xan-recommended-badge {
+    display: inline-block;
+    background-color: #003366;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 12px;
+    border-radius: 9999px;
+}
+
+.btn-outline-primary {
+    color: var(--xan-dark-blue);
+    border-color: var(--xan-dark-blue);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:active,
+.btn-check:checked + .btn-outline-primary {
+    background-color: var(--xan-dark-blue);
+    border-color: var(--xan-dark-blue);
+    color: var(--xan-white);
 }
