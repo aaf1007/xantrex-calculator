@@ -18,11 +18,14 @@ function updateArrayImage() {
     const parallel = parseInt(elements.parallel.value) || 1;
     const arrayImage = document.getElementById('arrayImage');
 
+    const arrayDisclaimer = document.getElementById('arrayDisclaimer');
     if (series >= 1 && series <= 6 && parallel >= 1 && parallel <= 4) {
         arrayImage.src = `/images/panels/${series}S-${parallel}P-Solar-Panel-Array-Series-Parallel.webp`;
         arrayImage.style.display = 'block';
+        arrayDisclaimer.style.display = 'block';
     } else {
         arrayImage.style.display = 'none';
+        arrayDisclaimer.style.display = 'none';
     }
 }
 
@@ -62,11 +65,13 @@ document.querySelector('form[action*="calculator"]').addEventListener('submit', 
     const iscValue = elements.isc.value.trim();
     const cityValue = elements.city.value.trim();
     const countryValue = elements.country.value.trim();
-    
+    const manualTempValue = document.getElementById('manualTemp').value.trim();
+    const tempUnit = document.getElementById('tempUnit').value;
+    const locationInputError = document.getElementById('locationInputError');
+
     let isValid = true;
     let errorMessage = '';
-    
-    // Check if required numeric fields are empty or invalid
+
     if (!pmaxValue || isNaN(parseFloat(pmaxValue)) || parseFloat(pmaxValue) <= 0) {
         isValid = false;
         errorMessage += 'Maximum Power (Pmax) must be a positive number. ';
@@ -74,7 +79,7 @@ document.querySelector('form[action*="calculator"]').addEventListener('submit', 
     } else {
         elements.pmax.classList.remove('is-invalid');
     }
-    
+
     if (!vocValue || isNaN(parseFloat(vocValue)) || parseFloat(vocValue) <= 0) {
         isValid = false;
         errorMessage += 'Open Circuit Voltage (Voc) must be a positive number. ';
@@ -82,7 +87,7 @@ document.querySelector('form[action*="calculator"]').addEventListener('submit', 
     } else {
         elements.voc.classList.remove('is-invalid');
     }
-    
+
     if (!iscValue || isNaN(parseFloat(iscValue)) || parseFloat(iscValue) <= 0) {
         isValid = false;
         errorMessage += 'Short Circuit Current (Isc) must be a positive number. ';
@@ -90,32 +95,43 @@ document.querySelector('form[action*="calculator"]').addEventListener('submit', 
     } else {
         elements.isc.classList.remove('is-invalid');
     }
-    
+
+    // Location: must fill city+country OR manual temp
+    const hasLocation = cityValue && countryValue;
+    const hasManualTemp = manualTempValue !== '' && !isNaN(parseFloat(manualTempValue));
+
+    if (!hasLocation && !hasManualTemp) {
+        isValid = false;
+        locationInputError.classList.remove('d-none');
+    } else {
+        locationInputError.classList.add('d-none');
+    }
+
     if (!isValid) {
-        e.preventDefault(); // Prevent form submission
-        
-        // Show error messages in a user-friendly way
-        const errorContainer = document.createElement('div');
-        errorContainer.className = 'alert alert-danger mb-4';
-        errorContainer.innerHTML = '<strong>Please correct the following errors:</strong><ul>' + 
-            errorMessage.split('. ').filter(msg => msg.trim()).map(msg => '<li>' + msg + '.</li>').join('') + '</ul>';
-        
-        // Remove any existing error messages
-        const existingError = document.querySelector('.alert-danger');
-        if (existingError) {
-            existingError.remove();
+        e.preventDefault();
+        const existingError = document.querySelector('.alert-danger:not(#locationError):not(#locationInputError)');
+        if (existingError) existingError.remove();
+        if (errorMessage) {
+            const errorContainer = document.createElement('div');
+            errorContainer.className = 'alert alert-danger mb-4';
+            errorContainer.innerHTML = '<strong>Please correct the following errors:</strong><ul>' +
+                errorMessage.split('. ').filter(msg => msg.trim()).map(msg => '<li>' + msg + '.</li>').join('') + '</ul>';
+            const form = document.querySelector('form');
+            form.insertBefore(errorContainer, form.firstChild);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        // Add error message at the top of the form
-        const form = document.querySelector('form');
-        form.insertBefore(errorContainer, form.firstChild);
-        
-        // Scroll to top to show errors
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
         return false;
     }
-    
+
+    // Convert manual temp to Celsius and set hidden field
+    if (hasManualTemp) {
+        let tempC = parseFloat(manualTempValue);
+        if (tempUnit === 'F') {
+            tempC = (tempC - 32) * 5 / 9;
+        }
+        document.getElementById('manualTempCelsius').value = tempC.toFixed(2);
+    }
+
     // If validation passes, ensure numeric fields have valid values
     elements.pmax.value = parseFloat(pmaxValue);
     elements.voc.value = parseFloat(vocValue);
@@ -281,6 +297,26 @@ const cityInput    = document.getElementById('city');
                 errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } catch (err) {
-            form.submit(); 
+            form.submit();
         }
     });
+
+const tempUnitSelect = document.getElementById('tempUnit');
+const manualTempInput = document.getElementById('manualTemp');
+if (tempUnitSelect) {
+    tempUnitSelect.addEventListener('change', function () {
+        const val = parseFloat(manualTempInput.value);
+        if (!isNaN(val)) {
+            if (this.value === 'F') {
+                manualTempInput.value = ((val * 9 / 5) + 32).toFixed(1);
+            } else {
+                manualTempInput.value = ((val - 32) * 5 / 9).toFixed(1);
+            }
+        }
+    });
+}
+
+const resultsSection = document.querySelector('.xan-controller-card');
+if (resultsSection) {
+    resultsSection.closest('.container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
