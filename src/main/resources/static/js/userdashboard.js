@@ -56,7 +56,7 @@ document.querySelectorAll('input').forEach(input => {
 });
 
 // Form validation before submission
-document.querySelector('form').addEventListener('submit', function(e) {
+document.querySelector('form[action*="calculator"]').addEventListener('submit', function(e) {
     const pmaxValue = elements.pmax.value.trim();
     const vocValue = elements.voc.value.trim();
     const iscValue = elements.isc.value.trim();
