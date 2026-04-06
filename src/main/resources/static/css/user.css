@@ -184,6 +184,13 @@ a.xan-link:hover {
     color: #6b7280;
 }
 
+.xan-or-divider {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #9ca3af;
+}
+
 .xan-controller-card {
     background-color: #f9fafb;
     border-radius: 8px;

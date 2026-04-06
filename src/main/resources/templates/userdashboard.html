@@ -38,7 +38,7 @@
 
         <form th:action="@{/calculator}" method="post">
             <div class="row g-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="xan-card h-100 p-4">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <span class="xan-section-num">1</span>
@@ -46,7 +46,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Select Xantrex Solar Panel</label>
+                            <label class="form-label">Select Solar Panel</label>
                             <select id="panelSelect" class="form-select">
                                 <option value="">-- Select Panel --</option>
                                 <option th:each="panel : ${panels}"
@@ -58,14 +58,14 @@
 
                             </select>
                             <img id="panelImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto"
-                                style="max-width: 400px; display: none;" />
+                                style="max-width: 180px; display: none;" />
 
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Maximum Power ( P<sub>max</sub> )</label>
                             <div class="input-group">
-                                <input type="number" id="pmax" name="pmax" class="form-control" value="0" min="0.01"
+                                <input type="number" id="pmax" name="pmax" class="form-control" placeholder="0" min="0.01"
                                     max="1000" step="0.01" required />
                                 <span class="input-group-text">W</span>
                             </div>
@@ -77,7 +77,7 @@
                         <div class="mb-3">
                             <label class="form-label">Open Circuit Voltage ( V<sub>oc</sub> )</label>
                             <div class="input-group">
-                                <input type="number" id="voc" name="voc" class="form-control" step="0.01" value="0.00"
+                                <input type="number" id="voc" name="voc" class="form-control" step="0.01" placeholder="0.00"
                                     min="0.01" max="150" required />
                                 <span class="input-group-text">V</span>
                             </div>
@@ -89,7 +89,7 @@
                         <div class="mb-3">
                             <label class="form-label">Short Circuit Current ( I<sub>sc</sub> )</label>
                             <div class="input-group">
-                                <input type="number" id="isc" name="isc" class="form-control" step="0.01" value="0.00"
+                                <input type="number" id="isc" name="isc" class="form-control" step="0.01" placeholder="0.00"
                                     min="0.01" max="50" required />
                                 <span class="input-group-text">A</span>
                             </div>
@@ -101,8 +101,8 @@
                 </div>
 
 
-                <div class="col-md-6">
-                    <div class="xan-card h-100 p-4">
+                <div class="col-md-4">
+                    <div class="xan-card h-100 p-4 d-flex flex-column">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <span class="xan-section-num">2</span>
                             <h5 class="xan-title mb-0">Solar Array Configuration</h5>
@@ -134,29 +134,50 @@
 
                         <img id="arrayImage" src="" alt="" class="img-fluid mt-3 d-block mx-auto"
                             style="max-width: 60%; display: none;" />
+                        <div class="mt-auto">
+                            <p id="arrayDisclaimer" class="text-danger mb-0" style="font-size: 0.7rem; display: none;">* Wiring diagram is for reference only. Ensure all connections are compatible with your solar panel setup and follow proper installation guidelines. Consult a qualified electrician if needed.</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="xan-card p-4">
+                <div class="col-md-4">
+                    <div class="xan-card h-100 p-4 d-flex flex-column">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <span class="xan-section-num">3</span>
                             <h5 class="xan-title mb-0">Location</h5>
                         </div>
+                        <input type="hidden" id="manualTempCelsius" name="manualTempCelsius" />
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-7 mb-3">
                                 <label class="form-label">City</label>
-                                <input type="text" id="city" name="city" class="form-control" value="Vancouver"
-                                    required />
+                                <input type="text" id="city" name="city" class="form-control" placeholder="e.g. Vancouver" />
                             </div>
-
-                            <div class="col-md-6 mb-3">
+                            <div class="col-5 mb-3">
                                 <label class="form-label">Country Code</label>
                                 <input type="text" id="country" name="country" class="form-control"
-                                    placeholder="e.g. CA, US, GB" value="CA" maxlength="2" required />
+                                    placeholder="e.g. CA" maxlength="2" />
                             </div>
-                            <div id="locationError" class="alert alert-danger d-none mt-2 py-2" role="alert">
+                        </div>
+                        <div id="locationError" class="alert alert-danger d-none mt-2 py-2" role="alert"></div>
+                        <div class="text-center my-2">
+                            <span class="xan-or-divider">OR</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Lowest Temperature at Your Location</label>
+                            <div class="input-group">
+                                <input type="number" id="manualTemp" class="form-control"
+                                    step="1" min="-99" max="150" />
+                                <select id="tempUnit" class="form-select" style="max-width: 90px;">
+                                    <option value="C">°C</option>
+                                    <option value="F">°F</option>
+                                </select>
                             </div>
+                        </div>
+                        <div id="locationInputError" class="alert alert-danger d-none py-2" role="alert">
+                            Please enter either a city and country, or a temperature.
+                        </div>
+                        <div class="mt-auto">
+                            <p class="text-danger mb-0" style="font-size: 0.7rem;">* Your location data is used to calculate a temperature-corrected voltage, ensuring you get the most accurate controller recommendation.</p>
                         </div>
                     </div>
                 </div>

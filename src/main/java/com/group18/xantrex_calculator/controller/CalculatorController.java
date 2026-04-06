@@ -45,8 +45,9 @@ public class CalculatorController {
             @RequestParam Integer series,
             @RequestParam Integer parallel,
             @RequestParam Integer battV,
-            @RequestParam String city,
-            @RequestParam String country,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) Double manualTempCelsius,
             Model model) {
 
         // Validate required parameters
@@ -58,8 +59,13 @@ public class CalculatorController {
             return "userdashboard";
         }
 
-        // Calculate temperature factor based on minimum temperature
-        double minTemp = weatherService.getMinTemperature(city, country);
+        // Use manual temp if provided, otherwise fetch from weather API
+        double minTemp;
+        if (manualTempCelsius != null) {
+            minTemp = manualTempCelsius;
+        } else {
+            minTemp = weatherService.getMinTemperature(city, country);
+        }
         double tempFactor = calculateTemperatureFactor(minTemp);
 
         model.addAttribute("panels", solarPanelsService.getAllPanels());
