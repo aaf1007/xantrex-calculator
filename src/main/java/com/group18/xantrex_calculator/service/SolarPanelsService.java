@@ -3,7 +3,9 @@ package com.group18.xantrex_calculator.service;
 import com.group18.xantrex_calculator.entity.SolarPanels;
 import com.group18.xantrex_calculator.repository.SolarPanelsRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SolarPanelsService {
@@ -20,6 +22,10 @@ public class SolarPanelsService {
 
     public SolarPanels getPanel(Long id) {
         return solarPanelsRepository.findById(id).orElse(null);
+    }
+
+    public Optional<SolarPanels> findByNameIgnoreCase(String name) {
+        return solarPanelsRepository.findByNameIgnoreCase(name);
     }
 
     public void saveSolarPanels(SolarPanels panel) {

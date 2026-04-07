@@ -42,7 +42,7 @@ public class AdminControllerTest {
     // --- addAdmin tests ---
 
     @Test
-    void addAdmin_success() throws Exception {
+    void addAdmin_success_redirectsWithSuccess() throws Exception {
         doNothing().when(userService).register("new@xantrex.com", "secret");
 
         mockMvc.perform(post("/dashboard/admins/add")
@@ -50,7 +50,7 @@ public class AdminControllerTest {
                         .param("email", "new@xantrex.com")
                         .param("password", "secret"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
+                .andExpect(redirectedUrl("/dashboard?success=admin-added"));
 
         verify(userService, times(1)).register("new@xantrex.com", "secret");
     }
@@ -118,7 +118,7 @@ public class AdminControllerTest {
     // --- deleteAdmin tests ---
 
     @Test
-    void deleteAdmin_success() throws Exception {
+    void deleteAdmin_success_redirectsWithSuccess() throws Exception {
         User target = new User();
         target.setEmail("other@xantrex.com");
         target.setRole(Role.ADMIN);
@@ -128,7 +128,7 @@ public class AdminControllerTest {
                         .with(user("admin@xantrex.com").roles("ADMIN"))
                         .param("id", "2"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
+                .andExpect(redirectedUrl("/dashboard?success=admin-deleted"));
 
         verify(userRepository, times(1)).deleteById(2L);
     }

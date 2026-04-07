@@ -40,7 +40,7 @@ public class AdminController {
         } catch (UserAlreadyExistsException e) {
             return "redirect:/dashboard?error=duplicate";
         }
-        return "redirect:/dashboard";
+        return "redirect:/dashboard?success=admin-added";
     }
 
     @PostMapping("/admins/delete")
@@ -51,7 +51,7 @@ public class AdminController {
                         return "redirect:/dashboard?error=self-delete";
                     }
                     userRepository.deleteById(id);
-                    return "redirect:/dashboard";
+                    return "redirect:/dashboard?success=admin-deleted";
                 })
                 .orElse("redirect:/dashboard");
     }

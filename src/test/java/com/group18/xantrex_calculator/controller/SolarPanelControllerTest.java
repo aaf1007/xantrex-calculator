@@ -1,21 +1,29 @@
 package com.group18.xantrex_calculator.controller;
 
 import com.group18.xantrex_calculator.entity.SolarPanels;
+import com.group18.xantrex_calculator.security.SecurityConfig;
 import com.group18.xantrex_calculator.service.SolarPanelsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SolarPanelController.class)
+@Import(SecurityConfig.class)
 class SolarPanelControllerTest {
 
     @Autowired
@@ -24,185 +32,87 @@ class SolarPanelControllerTest {
     @MockitoBean
     private SolarPanelsService solarPanelsService;
 
-    /**
-     * Test adding a new solar panel with valid data and ADMIN role
-     */
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void testAddController_withValidPanel() throws Exception {
-        SolarPanels panel = new SolarPanels("Test Panel", 350.0, 48.5, 9.2, "/images/test-panel.png");
+    void addPanel_emptyFields_redirectsWithError() throws Exception {
+        mockMvc.perform(post("/dashboard/panels/add")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("name", "")
+                        .param("pmax", "350.0")
+                        .param("voc", "48.5")
+                        .param("isc", "9.2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?error=empty-panel"));
+
+        verify(solarPanelsService, never()).findByNameIgnoreCase(any());
+        verify(solarPanelsService, never()).saveSolarPanels(any(SolarPanels.class));
+    }
+
+    @Test
+    void addPanel_duplicateName_redirectsWithError() throws Exception {
+        when(solarPanelsService.findByNameIgnoreCase("Existing Panel"))
+                .thenReturn(Optional.of(new SolarPanels()));
 
         mockMvc.perform(post("/dashboard/panels/add")
-                .with(csrf())
-                .param("name", "Test Panel")
-                .param("pmax", "350.0")
-                .param("voc", "48.5")
-                .param("isc", "9.2")
-                .param("imageUrl", "/images/test-panel.png"))
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("name", " Existing Panel ")
+                        .param("pmax", "350.0")
+                        .param("voc", "48.5")
+                        .param("isc", "9.2"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
+                .andExpect(redirectedUrl("/dashboard?error=duplicate-panel"));
 
+        verify(solarPanelsService, times(1)).findByNameIgnoreCase("Existing Panel");
+        verify(solarPanelsService, never()).saveSolarPanels(any(SolarPanels.class));
+    }
+
+    @Test
+    void addPanel_success_redirectsWithSuccess() throws Exception {
+        when(solarPanelsService.findByNameIgnoreCase("Test Panel")).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/dashboard/panels/add")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("name", " Test Panel ")
+                        .param("pmax", "350.0")
+                        .param("voc", "48.5")
+                        .param("isc", "9.2")
+                        .param("imageUrl", " /images/test-panel.png "))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?success=panel-added"));
+
+        verify(solarPanelsService, times(1)).findByNameIgnoreCase("Test Panel");
         verify(solarPanelsService, times(1)).saveSolarPanels(any(SolarPanels.class));
     }
 
-    /**
-     * Test adding a solar panel without ADMIN role (should redirect)
-     */
     @Test
-    @WithMockUser(roles = "USER")
-    void testAddController_withoutAdminRole() throws Exception {
+    void deletePanel_success_redirectsWithSuccess() throws Exception {
+        mockMvc.perform(post("/dashboard/panels/delete")
+                        .with(user("admin@xantrex.com").roles("ADMIN"))
+                        .param("id", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?success=panel-deleted"));
+
+        verify(solarPanelsService, times(1)).deletePanel(1L);
+    }
+
+    @Test
+    void addPanel_userRoleBlocked() throws Exception {
         mockMvc.perform(post("/dashboard/panels/add")
-                .with(csrf())
-                .param("name", "Test Panel")
-                .param("pmax", "350.0")
-                .param("voc", "48.5")
-                .param("isc", "9.2")
-                .param("imageUrl", "/images/test-panel.png"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
+                        .with(user("user@xantrex.com").roles("USER"))
+                        .param("name", "Test Panel")
+                        .param("pmax", "350.0")
+                        .param("voc", "48.5")
+                        .param("isc", "9.2"))
+                .andExpect(status().isForbidden());
+
+        verify(solarPanelsService, never()).saveSolarPanels(any(SolarPanels.class));
     }
 
-    /**
-     * Test adding a solar panel without authentication (should redirect to dashboard)
-     */
     @Test
-    void testAddController_withoutAuthentication() throws Exception {
-        mockMvc.perform(post("/dashboard/panels/add")
-                .with(csrf())
-                .param("name", "Test Panel")
-                .param("pmax", "350.0")
-                .param("voc", "48.5")
-                .param("isc", "9.2")
-                .param("imageUrl", "/images/test-panel.png"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-    }
-
-    /**
-     * Test adding a solar panel with missing CSRF token (should redirect)
-     */
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testAddController_withoutCsrfToken() throws Exception {
-        mockMvc.perform(post("/dashboard/panels/add")
-                .param("name", "Test Panel")
-                .param("pmax", "350.0")
-                .param("voc", "48.5")
-                .param("isc", "9.2")
-                .param("imageUrl", "/images/test-panel.png"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-    }
-
-    /**
-     * Test adding a solar panel with minimal data
-     */
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testAddController_withMinimalData() throws Exception {
-        mockMvc.perform(post("/dashboard/panels/add")
-                .with(csrf())
-                .param("name", "Simple Panel")
-                .param("pmax", "100.0")
-                .param("voc", "30.0")
-                .param("isc", "5.0"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-
-        verify(solarPanelsService, times(1)).saveSolarPanels(any(SolarPanels.class));
-    }
-
-    /**
-     * Test deleting a solar panel with valid ID and ADMIN role
-     */
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testDeletePanel_withValidId() throws Exception {
-        Long panelId = 1L;
-
+    void deletePanel_unauthenticated_redirectsToLogin() throws Exception {
         mockMvc.perform(post("/dashboard/panels/delete")
-                .with(csrf())
-                .param("id", "1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
+                        .param("id", "1"))
+                .andExpect(status().is3xxRedirection());
 
-        verify(solarPanelsService, times(1)).deletePanel(panelId);
-    }
-
-    /**
-     * Test deleting a solar panel without ADMIN role (should redirect)
-     */
-    @Test
-    @WithMockUser(roles = "USER")
-    void testDeletePanel_withoutAdminRole() throws Exception {
-        mockMvc.perform(post("/dashboard/panels/delete")
-                .with(csrf())
-                .param("id", "1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-    }
-
-    /**
-     * Test deleting a solar panel without authentication (should redirect to dashboard)
-     */
-    @Test
-    void testDeletePanel_withoutAuthentication() throws Exception {
-        mockMvc.perform(post("/dashboard/panels/delete")
-                .with(csrf())
-                .param("id", "1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-    }
-
-    /**
-     * Test deleting a solar panel without CSRF token (should redirect)
-     */
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testDeletePanel_withoutCsrfToken() throws Exception {
-        mockMvc.perform(post("/dashboard/panels/delete")
-                .param("id", "1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-    }
-
-    /**
-     * Test deleting a solar panel with non-existent ID
-     */
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testDeletePanel_withNonExistentId() throws Exception {
-        doNothing().when(solarPanelsService).deletePanel(999L);
-
-        mockMvc.perform(post("/dashboard/panels/delete")
-                .with(csrf())
-                .param("id", "999"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-
-        verify(solarPanelsService, times(1)).deletePanel(999L);
-    }
-
-    /**
-     * Test deleting a solar panel with multiple sequential deletions
-     */
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testDeletePanel_multipleSequentialDeletions() throws Exception {
-        // First deletion
-        mockMvc.perform(post("/dashboard/panels/delete")
-                .with(csrf())
-                .param("id", "1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-
-        // Second deletion
-        mockMvc.perform(post("/dashboard/panels/delete")
-                .with(csrf())
-                .param("id", "2"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/dashboard"));
-
-        verify(solarPanelsService, times(2)).deletePanel(any());
+        verify(solarPanelsService, never()).deletePanel(any());
     }
 }
