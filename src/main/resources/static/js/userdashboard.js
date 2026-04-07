@@ -132,6 +132,14 @@ document.querySelector('form[action*="calculator"]').addEventListener('submit', 
         document.getElementById('manualTempCelsius').value = tempC.toFixed(2);
     }
 
+    // Show loading spinner
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
+    submitBtn.disabled = true;
+    submitText.classList.add('d-none');
+    submitSpinner.classList.remove('d-none');
+
     // If validation passes, ensure numeric fields have valid values
     elements.pmax.value = parseFloat(pmaxValue);
     elements.voc.value = parseFloat(vocValue);
