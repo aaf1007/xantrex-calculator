@@ -13,7 +13,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -65,8 +65,8 @@ public class CalculatorControllerTest {
                 260, 23.8, 10.0, 6, 2, 12, 1.2))
                 .thenReturn(result);
 
-        when(calculatorService.findMatchingController(result, "12"))
-                .thenReturn(Optional.of(controller));
+        when(calculatorService.findAllCompatibleControllers(result, "12"))
+                .thenReturn(List.of(controller));
 
         mockMvc.perform(post("/calculator")
                 .param("pmax", "260")
@@ -78,15 +78,16 @@ public class CalculatorControllerTest {
                 .param("city", "Vancouver")
                 .param("country", "CA"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("result"))
+                .andExpect(view().name("userdashboard"))
                 .andExpect(model().attributeExists("result"))
+                .andExpect(model().attributeExists("compatibleControllers"))
                 .andExpect(model().attributeExists("recommendedController"));
 
         verify(calculatorService, times(1))
                 .calculate(260, 23.8, 10.0, 6, 2, 12, 1.2);
 
         verify(calculatorService, times(1))
-                .findMatchingController(result, "12");
+                .findAllCompatibleControllers(result, "12");
     }
 
 
