@@ -7,11 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.group18.xantrex_calculator.entity.MpptController;
 import com.group18.xantrex_calculator.entity.Role;
@@ -58,15 +54,52 @@ public class DashboardController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
-    public String addController(@ModelAttribute MpptController controller) {
+    public String addController(@RequestParam(required = false) String name,
+                                @RequestParam(required = false) String maxVoc,
+                                @RequestParam(required = false) String maxCurrent,
+                                @RequestParam(required = false) String maxIsc,
+                                @RequestParam(required = false) String batteryBank,
+                                @RequestParam(required = false) String imageUrl,
+                                @RequestParam(required = false) String productUrl) {
+        if (isBlank(name) || isBlank(maxVoc) || isBlank(maxCurrent) || isBlank(maxIsc) || isBlank(batteryBank)) {
+            return "redirect:/dashboard?error=empty-controller";
+        }
+
+        String trimmedName = name.trim();
+        if (controllerRepository.findByNameIgnoreCase(trimmedName).isPresent()) {
+            return "redirect:/dashboard?error=duplicate-controller";
+        }
+
+        MpptController controller = new MpptController();
+        controller.setName(trimmedName);
+        controller.setBatteryBank(batteryBank.trim());
+        controller.setImageUrl(normalizeOptional(imageUrl));
+        controller.setProductUrl(normalizeOptional(productUrl));
+
+        try {
+            controller.setMaxVoc(Double.valueOf(maxVoc.trim()));
+            controller.setMaxCurrent(Double.valueOf(maxCurrent.trim()));
+            controller.setMaxIsc(Double.valueOf(maxIsc.trim()));
+        } catch (NumberFormatException ex) {
+            return "redirect:/dashboard?error=empty-controller";
+        }
+
         controllerRepository.save(controller);
-        return "redirect:/dashboard";
+        return "redirect:/dashboard?success=controller-added";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete")
     public String deleteController(@RequestParam Long id) {
         controllerRepository.deleteById(id);
-        return "redirect:/dashboard";
+        return "redirect:/dashboard?success=controller-deleted";
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private String normalizeOptional(String value) {
+        return isBlank(value) ? null : value.trim();
     }
 }
