@@ -205,8 +205,12 @@
             </div>
 
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-xan btn-lg px-5">
-                    View Recommended Controller
+                <button type="submit" id="submitBtn" class="btn btn-xan btn-lg px-5">
+                    <span id="submitText">View Recommended Controller</span>
+                    <span id="submitSpinner" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Finding Controllers...
+                    </span>
                 </button>
             </div>
         </form>
