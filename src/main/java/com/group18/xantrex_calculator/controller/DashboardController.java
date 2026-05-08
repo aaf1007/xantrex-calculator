@@ -77,9 +77,15 @@ public class DashboardController {
         controller.setProductUrl(normalizeOptional(productUrl));
 
         try {
-            controller.setMaxVoc(Double.valueOf(maxVoc.trim()));
-            controller.setMaxCurrent(Double.valueOf(maxCurrent.trim()));
-            controller.setMaxIsc(Double.valueOf(maxIsc.trim()));
+            double parsedMaxVoc = Double.parseDouble(maxVoc.trim());
+            double parsedMaxCurrent = Double.parseDouble(maxCurrent.trim());
+            double parsedMaxIsc = Double.parseDouble(maxIsc.trim());
+            if (parsedMaxVoc < 0 || parsedMaxCurrent < 0 || parsedMaxIsc < 0) {
+                return "redirect:/dashboard?error=empty-controller";
+            }
+            controller.setMaxVoc(parsedMaxVoc);
+            controller.setMaxCurrent(parsedMaxCurrent);
+            controller.setMaxIsc(parsedMaxIsc);
         } catch (NumberFormatException ex) {
             return "redirect:/dashboard?error=empty-controller";
         }

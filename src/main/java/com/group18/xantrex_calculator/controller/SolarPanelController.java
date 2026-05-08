@@ -38,9 +38,15 @@ public class SolarPanelController {
         panel.setImageUrl(normalizeOptional(imageUrl));
 
         try {
-            panel.setPmax(Double.parseDouble(pmax.trim()));
-            panel.setVoc(Double.parseDouble(voc.trim()));
-            panel.setIsc(Double.parseDouble(isc.trim()));
+            double parsedPmax = Double.parseDouble(pmax.trim());
+            double parsedVoc = Double.parseDouble(voc.trim());
+            double parsedIsc = Double.parseDouble(isc.trim());
+            if (parsedPmax < 0 || parsedVoc < 0 || parsedIsc < 0) {
+                return "redirect:/dashboard?error=empty-panel";
+            }
+            panel.setPmax(parsedPmax);
+            panel.setVoc(parsedVoc);
+            panel.setIsc(parsedIsc);
         } catch (NumberFormatException ex) {
             return "redirect:/dashboard?error=empty-panel";
         }

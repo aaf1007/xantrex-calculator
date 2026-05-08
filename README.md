@@ -16,13 +16,19 @@
 
 ---
 
+## Project Handover
+
+For Xantrex maintainers: see **[HANDOVER.md](HANDOVER.md)** for the full handover package — setup and deployment instructions, hosting and credential inventory, architecture and sizing logic, known issues, and recommended next steps.
+
+---
+
 ## Local Development Setup
 
 Before running the application or tests, export the three required environment variables in your terminal:
 
 ```bash
-export DB_URL=jdbc:postgresql://dpg-d6n244nafjfc739es540-a.oregon-postgres.render.com:5432/cmpt_276_xantrex_database?sslmode=require
-export DB_USER=cmpt_276_xantrex_database_user
+export DB_URL=jdbc:postgresql://<db-host>:5432/<db-name>?sslmode=require
+export DB_USER=<db-user>
 export DB_PASSWORD=<ask team lead for password>
 
 # Run the application
@@ -34,7 +40,7 @@ export DB_PASSWORD=<ask team lead for password>
 
 The application will fail to start if any of these variables are missing — this is intentional (no H2 fallback). Set them in your shell profile (`.zshrc` / `.bashrc`) to avoid re-exporting each session.
 
-**Render deployment:** Set these as environment variables in the Render dashboard under your service's "Environment" tab. Do not commit real credentials to any file.
+**Hosted deployment:** Set these as environment variables in your hosting provider's dashboard under the service's "Environment" tab. Do not commit real credentials to any file.
 
 ---
 
