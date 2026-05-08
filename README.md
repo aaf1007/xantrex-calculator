@@ -1,7 +1,5 @@
 # Project Proposal
 
-## Web App Name
-
 **Solar Charge Controller Calculator - Xantrex**
 
 ## Team Member Roles for Proposal
